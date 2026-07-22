@@ -25,7 +25,6 @@ int main(){
     Good Design - Employee has 1 responsibility
 */
 
-
 class Payment{
 public:
     virtual void pay() = 0;
