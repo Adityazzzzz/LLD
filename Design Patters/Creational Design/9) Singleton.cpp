@@ -13,9 +13,6 @@ Only one instance should exist.
 
 */
 
-#include <iostream>
-using namespace std;
-
 class Logger{
 private:
     Logger(){}
