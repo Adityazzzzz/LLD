@@ -1,3 +1,4 @@
+#pragma once
 #include "../enums/ObstacleType.hpp"
 
 class Obstacle{
