@@ -7,19 +7,15 @@ protected:
     int dest;
 
 public:
-    Obstacle(int s,int d) : src(s), dest(d) {}
+    Obstacle(int src,int dest){
+        this->src = src;
+        this->dest = dest;
+    }
     virtual ~Obstacle() = default;
 
-    virtual ObstacleType getObstacType() const = 0;
+    virtual ObstacleType getObstacleType() const = 0;
 
     int movePlayer() const{
-        return dest;
-    }
-
-    int getSrc() const{
-        return src;
-    }
-    int getDest() const{
         return dest;
     }
 };
