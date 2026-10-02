@@ -1,9 +1,9 @@
 #pragma once
 #include <stdexcept>
 #include "../enums/ObstacleType.hpp"
-#include "../model/Obstacle.hpp"
-#include "../model/Snake.hpp"
-#include "../model/Ladder.hpp"
+#include "../entities/Obstacle.hpp"
+#include "../entities/Snake.hpp"
+#include "../entities/Ladder.hpp"
 using namespace std;
 
 class ObstacleFactory{

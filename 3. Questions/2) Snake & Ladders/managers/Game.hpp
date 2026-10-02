@@ -1,13 +1,13 @@
 #pragma once
 #include <iostream>
 #include <queue>
-#include <cstdlib> 
+#include <cstdlib>
 #include "../enums/ObstacleType.hpp"
 #include "../factory/ObstacleFactory.hpp"
-#include "../model/Board.hpp"
-#include "../model/Dice.hpp"
-#include "../model/Player.hpp"
-#include "../model/Obstacle.hpp"
+#include "../entities/Board.hpp"
+#include "../entities/Dice.hpp"
+#include "../entities/Player.hpp"
+#include "../entities/Obstacle.hpp"
 using namespace std;
 
 class Game{
