@@ -14,7 +14,7 @@ private:
 public:
     Player(string name,int pos){
         this->name = name;
-        this->pos = pos;
+        this->pos = 0;
     }
     int getPos(){ 
         return pos; 
@@ -77,8 +77,8 @@ public:
     void addobstacle(Obstacle* x){
         mpp[x->getsrc()] = x;
     }
-    int getNewPost(Player* player,int roll){
-        int target = player->getPos() + roll;
+    int getNewPos(Player* player,int roll){
+        int tar = player->getPos() + roll;
         
         if(mpp.find(tar)!=mpp.end()){
             Obstacle* obs = mpp[tar];
@@ -86,7 +86,7 @@ public:
 
             cout << type << obs->getsrc() << obs->getdest() << endl;
         }
-        return target;
+        return tar;
     }
 };
 
@@ -126,15 +126,14 @@ public:
             players.pop();
 
             int roll = dice->roll();
-            int newPos = board->getNewPosition(p,roll);
+            int newPos = board->getNewPos(p,roll);
             
-            if(newPos != p->getPosition()) {
-                cout << p->getName() << " rolled " << roll << ", moved from " << p->getPosition() << " to " << newPos << "\n";
-                p->setPosition(newPos);
+            if(newPos != p->getPos()) {
+                cout << roll << p->getPos() << newPos << "\n";
             }
 
             if(newPos == board->getSize()) {
-                cout << "🏆 " << p->getName() << " WINS!\n";
+                cout << p->getPos() << " WINS!\n";
             } 
             else {
                 players.push(p);
