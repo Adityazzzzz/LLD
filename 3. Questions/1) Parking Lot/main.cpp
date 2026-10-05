@@ -1,10 +1,53 @@
-#include <iostream>
+#include <bits/stdc++.h>
 using namespace std;
 
 //enums
 enum class VehicleType{
     CAR,BIKE,TRUCK
 };
+
+//strategy
+class PricingStrategy{
+public:
+    virtual ~PricingStrategy() = default;
+    virtual double calPrice(int hours,VehicleType type) = 0;
+};
+class DurationBasedPrice:public PricingStrategy{
+public:
+    double calPrice(int hours,VehicleType type) override{
+        double rate = 0.0;
+        switch(type){
+            case VehicleType::BIKE: rate = 10.0; break;
+            case VehicleType::CAR: rate = 20.0; break;
+            case VehicleType::TRUCK: rate = 30.0; break;
+        }
+        int billableHours =(hours < 1) ? 1 : hours;
+        
+        return billableHours * rate;
+    }
+};
+// class EventBasedPrice:public PricingStrategy{
+//     //-------------
+// }
+
+class PaymentMethod{
+public:
+    virtual void pay(double amount) = 0;
+    virtual ~PaymentMethod(){}
+};
+class CashPayment : public PaymentMethod{
+public:
+    void pay(double amount) override{
+        cout << "Paid Rs. " << amount << " using Cash\n";
+    }
+};
+class CardPayment : public PaymentMethod{
+public:
+    void pay(double amount) override{
+        cout << "Paid Rs. " << amount << " using Card\n";
+    }
+};
+
 //entities
 class Vehicle{
 protected:
@@ -40,58 +83,20 @@ public:
         return VehicleType::TRUCK;
     }
 };
-
-class Gate{
-protected:
-    int gateId;
-    ParkingLot* lot;
+//factory
+class VehicleFactory{
 public:
-    Gate(int id,ParkingLot* lot){
-        this->gateId = id;
-        this->lot = lot;
-    }
-    virtual ~Gate() = default;
-};
-class EntryGate:public Gate{
-public:
-    EntryGate(int id,ParkingLot* lot) : Gate(id,lot){}
-
-    Ticket* processVehicle(Vehicle* vehicle){
-        cout << vehicle->getNumber() << endl;
-        return lot->parkVehicle(vehicle); 
-    }
-};
-class ExitGate:public Gate{
-public:
-    ExitGate(int id,ParkingLot* lot) : Gate(id,lot){}
-
-    double processTicket(Ticket* ticket,PaymentMethod* payment){
-        cout << ticket->getId() <<endl;
-        return lot->exitVehicle(ticket,payment);
-    }
-};
-
-class Floor{
-private:
-    int id;
-    map<int,ParkingSpot*> spots;
-public:
-    Floor(int id){
-        this->id = id;
-    }
-
-    void addSpot(ParkingSpot* spot){
-        spots[spot->getId()] = spot;
-    }
-    ParkingSpot* findAvailableSpot(Vehicle* vehicle){
-        for(auto const& [spotId,spot] : spots){
-            if(spot->canFit(vehicle)){
-                return spot;
-            }
+    static Vehicle* func(VehicleType type,string number){
+        switch(type){
+            case VehicleType::BIKE: return new Bike(number);
+            case VehicleType::CAR: return new Car(number);
+            case VehicleType::TRUCK: return new Truck(number);
+            default:
+                break;
         }
-        return nullptr;
-    }
+    };
 };
+
 
 class ParkingSpot{
 protected:
@@ -121,6 +126,28 @@ public:
     int getId(){ return id; }
 };
 
+class Floor{
+private:
+    int id;
+    map<int,ParkingSpot*> spots;
+public:
+    Floor(int id){
+        this->id = id;
+    }
+
+    void addSpot(ParkingSpot* spot){
+        spots[spot->getId()] = spot;
+    }
+    ParkingSpot* findAvailableSpot(Vehicle* vehicle){
+        for(auto const& [spotId,spot] : spots){
+            if(spot->canFit(vehicle)){
+                return spot;
+            }
+        }
+        return nullptr;
+    }
+};
+
 class Ticket{
 private:
     int id;
@@ -142,62 +169,6 @@ public:
     Vehicle* getVehicle(){ return vehicle; }
     ParkingSpot* getSpot(){ return spot; }
     time_t getEntryTime(){ return entryTime; }
-};
-
-//strategy
-class PricingStrategy{
-public:
-    virtual ~PricingStrategy() = default;
-    virtual double calPrice(int hours,VehicleType type) = 0;
-};
-class DurationBasedPrice:public PricingStrategy{
-public:
-    double calPrice(int hours,VehicleType type) override{
-        double rate = 0.0;
-        switch(type){
-            case VehicleType::BIKE: rate = 10.0; break;
-            case VehicleType::CAR: rate = 20.0; break;
-            case VehicleType::TRUCK: rate = 30.0; break;
-        }
-        int billableHours =(hours < 1) ? 1 : hours;
-        
-        return billableHours * rate;
-    }
-};
-class EventBasedPrice:public PricingStrategy{
-    //-------------
-};
-
-class PaymentMethod{
-public:
-    virtual void pay(double amount) = 0;
-    virtual ~PaymentMethod(){}
-};
-class CashPayment : public PaymentMethod{
-public:
-    void pay(double amount) override{
-        cout << "Paid Rs. " << amount << " using Cash\n";
-    }
-};
-class CardPayment : public PaymentMethod{
-public:
-    void pay(double amount) override{
-        cout << "Paid Rs. " << amount << " using Card\n";
-    }
-};
-
-//factory
-class VehicleFactory{
-public:
-    static Vehicle* func(VehicleType type,string number){
-        switch(type){
-            case VehicleType::BIKE: return new Bike(number);
-            case VehicleType::CAR: return new Car(number);
-            case VehicleType::TRUCK: return new Truck(number);
-            default:
-                break;
-        }
-    }
 };
 //manager
 class ParkingLot{
@@ -240,6 +211,36 @@ public:
         
         cout << "Spot " << ticket->getSpot()->getId() << " is now free.\n";
         return price;
+    }
+};
+
+class Gate{
+protected:
+    int gateId;
+    ParkingLot* lot;
+public:
+    Gate(int id,ParkingLot* lot){
+        this->gateId = id;
+        this->lot = lot;
+    }
+    virtual ~Gate() = default;
+};
+class EntryGate:public Gate{
+public:
+    EntryGate(int id,ParkingLot* lot) : Gate(id,lot){}
+
+    Ticket* processVehicle(Vehicle* vehicle){
+        cout << vehicle->getNumber() << endl;
+        return lot->parkVehicle(vehicle); 
+    }
+};
+class ExitGate:public Gate{
+public:
+    ExitGate(int id,ParkingLot* lot) : Gate(id,lot){}
+
+    double processTicket(Ticket* ticket,PaymentMethod* payment){
+        cout << ticket->getId() <<endl;
+        return lot->exitVehicle(ticket,payment);
     }
 };
 
