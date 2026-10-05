@@ -1,9 +1,6 @@
 #include <iostream>
 using namespace std;
 
-// ==========================================
-// 1. ENUMS & FORWARD DECLARATIONS
-// ==========================================
 enum class ATMStatus{
     IDLE,
     CARD_INSERTED,
@@ -15,9 +12,6 @@ class ATMMachine;
 class ATM;
 class CashDispenser;
 
-// ==========================================
-// 2. DOMAIN ENTITIES (Account, Card, ATM)
-// ==========================================
 class Account{
 private:
     string accountNumber;
@@ -96,9 +90,6 @@ public:
     }
 };
 
-// ==========================================
-// 3. REPOSITORY LAYER
-// ==========================================
 class ATMRepository{
 private:
     unordered_map<string, ATM*> atms;
@@ -122,9 +113,6 @@ public:
     }
 };
 
-// ==========================================
-// 4. CASH DISPENSER (CHAIN OF RESPONSIBILITY)
-// ==========================================
 class CashDispenser{
 protected:
     CashDispenser* nextCashDispenser;
@@ -232,9 +220,6 @@ public:
     }
 };
 
-// ==========================================
-// 5. ATM STATE PATTERN INTERFACE
-// ==========================================
 class ATMState{
 public:
     virtual ~ATMState() = default;
@@ -246,9 +231,6 @@ public:
     virtual ATMStatus getStatus() = 0;
 };
 
-// ==========================================
-// 6. ATM MACHINE (CONTEXT)
-// ==========================================
 class ATMMachine{
 private:
     ATM* atm;
@@ -276,9 +258,6 @@ public:
     ATMStatus getStatus(){ return this->state->getStatus(); }
 };
 
-// ==========================================
-// 7. CONCRETE STATES
-// ==========================================
 class IdleState : public ATMState{
 private:
     ATMMachine* atmMachine;
@@ -440,9 +419,6 @@ public:
     }
 };
 
-// ==========================================
-// 8. METHOD BODIES (Resolving Circular Dependencies)
-// ==========================================
 ATMMachine::ATMMachine(ATM* atm, ATMRepository* atmRepository){
     this->atm = atm;
     this->atmRepository = atmRepository;
@@ -498,39 +474,32 @@ void DispenseCashState::ejectCard(){
     this->atmMachine->setState(new IdleState(this->atmMachine));
 }
 
-// ==========================================
-// 9. DRIVER CODE
-// ==========================================
 int main(){
-    // 1. Setup Data Models
     Account* myAccount = new Account("ACC_998877", 25000.0);
     Card* myCard = new Card("CARD_1234_5678", "4321", myAccount);
 
-    // ATM inventory: 2x2000 (4000), 5x500 (2500), 10x100 (1000) = Total Rs. 7500
     ATM* atm1 = new ATM("ATM_DELHI_01", 2, 5, 10);
 
-    // 2. Setup Repository
     ATMRepository* repository = new ATMRepository();
     repository->save(atm1);
 
-    // 3. Initialize Controller
     ATMMachine* machine = new ATMMachine(atm1, repository);
 
     cout << "=== SCENARIO 1: WRONG PIN FLOW ===\n";
     machine->insertCard(myCard);
-    machine->enterPin("0000"); // Fail check
+    machine->enterPin("0000");
 
     cout << "\n=== SCENARIO 2: SUCCESSFUL CASH WITHDRAWAL ===\n";
     machine->insertCard(myCard);
-    machine->enterPin("4321"); // Pass check
+    machine->enterPin("4321");
     machine->selectOption("WITHDRAW");
-    machine->dispenseCash(5700); // 2x2000 (4000) + 3x500 (1500) + 2x100 (200)
+    machine->dispenseCash(5700);
 
     cout << "\n=== SCENARIO 3: WITHDRAWAL EXCEEDING ATM CASH ===\n";
     machine->insertCard(myCard);
     machine->enterPin("4321");
     machine->selectOption("WITHDRAW");
-    machine->dispenseCash(10000); // Exceeds remaining ATM vault limit
+    machine->dispenseCash(10000);
 
     return 0;
 }
