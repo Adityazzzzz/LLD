@@ -69,7 +69,7 @@ public:
 class MoveStrategy{
 public:
     virtual ~MoveStrategy() = default;
-    virtual isValidMove(Cell* src,Cell* dest,Board* board) = 0;
+    virtual bool isValidMove(Cell* src,Cell* dest,Board* board) = 0;
 };
 
 class KingStrategy:public MoveStrategy{
@@ -104,7 +104,7 @@ public:
 
     Color getColor(){ return color; }
     bool getIsKilled(){ return isKilled; }
-    void setIskilled(bool status){ this->isKilled = status; }
+    void setIsKilled(bool status){ this->isKilled = status; }
 
     void addStrategy(MoveStrategy* strategy){
         this->moves.push_back(strategy);
@@ -137,7 +137,7 @@ public:
         switch(type){
             case PieceType::KING:
                 piece = new King(color);
-                piece->addStrategy(new KingMoveStrategy());
+                piece->addStrategy(new KingStrategy());
                 break;
             case PieceType::KNIGHT:
                 piece = new Knight(color);
@@ -148,7 +148,7 @@ public:
     }
 };
 
-class Move*{
+class Move{
 private:
     Cell* startCell;
     Cell* endCell;
@@ -180,7 +180,7 @@ public:
             }
         }
     }
-    Cell* cell(int r,int c){
+    Cell* getCell(int r,int c){
         if(r<0 || r>8-1 || c<0 || c>8-1) return nullptr;
         return grid[r][c];
     }
@@ -210,14 +210,14 @@ private:
     stack<Move*> moveHistory;
     vector<Spectator*> spectators;
 
-    void notifySpectators(sring msg){
+    void notifySpectators(string msg){
         for(auto it:spectators){
             it->update(msg);
         }
     }
 public:
     Chess(){
-        this->board = new board();
+        this->board = new Board();
     }
     void addPlayer(Player* p){
         this->players.push(p);
