@@ -1,16 +1,8 @@
 #include <iostream>
-#include <string>
-
 using namespace std;
 
-// ==========================================
-// 1. FORWARD DECLARATIONS
-// ==========================================
 class VendingMachine;
 
-// ==========================================
-// 2. STATE INTERFACE (Using your diagram's exact methods)
-// ==========================================
 class VendingMachineState {
 public:
     virtual ~VendingMachineState() = default;
@@ -22,9 +14,6 @@ public:
     virtual void refill(VendingMachine* m, int qty) { cout << "[ERROR] Cannot refill right now.\n"; }
 };
 
-// ==========================================
-// 3. CONCRETE STATES (Declarations)
-// ==========================================
 class NoCoinState : public VendingMachineState {
 public:
     void insertCoin(VendingMachine* m, int amount) override;
@@ -47,15 +36,12 @@ public:
     void refill(VendingMachine* m, int qty) override;
 };
 
-// ==========================================
-// 4. CONTEXT (Vending Machine Manager)
-// ==========================================
 class VendingMachine {
 private:
     VendingMachineState* state;
     int inventory;
     int currentBalance;
-    const int ITEM_PRICE = 15; // Hardcoded price for MVP simplicity
+    const int ITEM_PRICE = 15;
 
 public:
     VendingMachine(int initialInventory);
@@ -71,16 +57,12 @@ public:
     
     int getPrice() { return ITEM_PRICE; }
 
-    // Delegate to current state
     void insertCoin(int amount) { state->insertCoin(this, amount); }
     void selectItem() { state->selectItem(this); }
     void dispense() { state->dispense(this); }
     void refill(int qty) { state->refill(this, qty); }
 };
 
-// ==========================================
-// 5. IMPLEMENTATIONS (Resolving Circular Dependencies)
-// ==========================================
 VendingMachine::VendingMachine(int initialInventory) {
     this->inventory = initialInventory;
     this->currentBalance = 0;
@@ -156,11 +138,7 @@ void SoldOutState::refill(VendingMachine* m, int qty) {
     m->setState(new NoCoinState());
 }
 
-// ==========================================
-// 6. MAIN DRIVER
-// ==========================================
 int main() {
-    // Initialize with 2 items
     VendingMachine* machine = new VendingMachine(2);
 
     cout << "=== SCENARIO 1: SUCCESSFUL PURCHASE ===\n";
