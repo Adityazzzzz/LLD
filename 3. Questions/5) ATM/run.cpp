@@ -1,13 +1,13 @@
-#include <iostream>
+#include <bits/stdc++.h>
 using namespace std;
 
 class Card{
 public:
     string cardNumber;
     string pin;
-    double balance
+    double balance;
 
-    Card(string c,sting p,double b){
+    Card(string c,string p,double b){
         this->cardNumber = c;
         this->pin = p;
         this->balance = b;
@@ -46,7 +46,7 @@ public:
         if(notes > 0) cout << "Dispensing " << notes << " notes of Rs. 2000\n";
         if(remainder > 0 && next != nullptr) next->dispense(remainder);
     }
-}
+};
 class Dispenser500:public Dispenser{
 public:
     bool canDispense(int amount) override{
@@ -80,6 +80,16 @@ public:
     }
 };
 
+class ATMState{
+public:
+    virtual ~ATMState() = default;
+    virtual void insertCard(Card* card) = 0;
+    virtual void enterPin(string pin) = 0;
+    virtual void selectOption(string option) = 0;
+    virtual void dispenseCash(int amount) = 0;
+    virtual void ejectCard() = 0;
+};
+
 class ATMMachine{
 public:
     ATMState* state;
@@ -109,15 +119,6 @@ public:
     }
 };
 
-class ATMState{
-public:
-    virtual ~ATMState() = default;
-    virtual void insertCard(Card* card) = 0
-    virtual void enterPin(string pin) = 0
-    virtual void selectOption(string option) = 0
-    virtual void dispenseCash(int amount) = 0
-    virtual void ejectCard() = 0
-};
 
 class IdleState:public ATMState{
 private:
@@ -235,4 +236,28 @@ void DispenseCashState::dispenseCash(int amount){
     cout << "Ejecting card.\n";
     this->machine->currentCard = nullptr;
     this->machine->setState(new IdleState(this->machine));
+}
+
+int main(){
+    ATMMachine* atm = new ATMMachine();
+    Card* mycard = new Card("1234-5678-1234","1111",50000.0);
+
+    // Scenario 1 - Valid Withdrawal
+    atm->insertCard(mycard);
+    atm->enterPin("1111");
+    atm->selectOption("WITHDRAW");
+    atm->selectOption("WITHDRAW");
+    atm->dispenseCash(6600);
+
+    // Scenario 2: Invalid PIN
+    atm->insertCard(mycard);
+    atm->enterPin("9999");
+
+    // Scenario 3: Insufficient Balance
+    atm->insertCard(mycard);
+    atm->enterPin("1111");
+    atm->selectOption("WITHDRAW");
+    atm->dispenseCash(100000);
+
+    return 0;
 }
