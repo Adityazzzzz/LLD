@@ -43,7 +43,7 @@ public:
         int notes = amount / 2000;
         int remainder = amount % 2000;
         
-        if(notes > 0) cout << "Dispensing " << notes << " notes of Rs. 2000\n";
+        if(notes > 0) cout << "Dispensing " << notes << " notes of Rs. 2000";
         if(remainder > 0 && next != nullptr) next->dispense(remainder);
     }
 };
@@ -59,7 +59,7 @@ public:
         int notes = amount / 500;
         int remainder = amount % 500;
         
-        if(notes > 0) cout << "Dispensing " << notes << " notes of Rs. 500\n";
+        if(notes > 0) cout << "Dispensing " << notes << " notes of Rs. 500";
         if(remainder > 0 && next != nullptr) next->dispense(remainder);
     }
 };
@@ -75,7 +75,7 @@ public:
         int notes = amount / 100;
         int remainder = amount % 100;
         
-        if(notes > 0) cout << "Dispensing " << notes << " notes of Rs. 100\n";
+        if(notes > 0) cout << "Dispensing " << notes << " notes of Rs. 100";
         if(remainder > 0 && next != nullptr) next->dispense(remainder);
     }
 };
@@ -83,11 +83,12 @@ public:
 class ATMState{
 public:
     virtual ~ATMState() = default;
-    virtual void insertCard(Card* card) = 0;
-    virtual void enterPin(string pin) = 0;
-    virtual void selectOption(string option) = 0;
-    virtual void dispenseCash(int amount) = 0;
-    virtual void ejectCard() = 0;
+    
+virtual void insertCard(Card* card){ cout << "[ERROR] Invalid operation."; }
+    virtual void enterPin(string pin){ cout << "[ERROR] Invalid operation."; }
+    virtual void selectOption(string option){ cout << "[ERROR] Invalid operation."; }
+    virtual void dispenseCash(int amount){ cout << "[ERROR] Invalid operation."; }
+    virtual void ejectCard(){ cout << "[ERROR] Invalid operation."; }
 };
 
 class ATMMachine{
@@ -179,61 +180,61 @@ ATMMachine::ATMMachine(){
 }
 
 void IdleState::insertCard(Card* card){
-    cout << "Card inserted: " << card->cardNumber << "\n";
+    cout << "Card inserted: " << card->cardNumber << "";
     this->machine->currentCard = card;
     this->machine->setState(new CardInsertedState(this->machine));
 }
 
 void CardInsertedState::enterPin(string pin){
     if (this->machine->currentCard->pin == pin){
-        cout << "PIN Verified.\n";
+        cout << "PIN Verified.";
         this->machine->setState(new AuthenticatedState(this->machine));
     } 
     else{
-        cout << "[DECLINED] Incorrect PIN.\n";
+        cout << "[DECLINED] Incorrect PIN.";
         this->ejectCard();
     }
 }
 
 void CardInsertedState::ejectCard(){
-    cout << "Ejecting card.\n";
+    cout << "Ejecting card.";
     this->machine->currentCard = nullptr;
     this->machine->setState(new IdleState(this->machine));
 }
 
 void AuthenticatedState::selectOption(string option){
     if (option == "WITHDRAW"){
-        cout << "Option: WITHDRAW selected.\n";
+        cout << "Option: WITHDRAW selected.";
         this->machine->setState(new DispenseCashState(this->machine));
     } 
     else{
-        cout << "Option not supported.\n";
+        cout << "Option not supported.";
         this->ejectCard();
     }
 }
 
 void AuthenticatedState::ejectCard(){
-    cout << "Ejecting card.\n";
+    cout << "Ejecting card.";
     this->machine->currentCard = nullptr;
     this->machine->setState(new IdleState(this->machine));
 }
 
 void DispenseCashState::dispenseCash(int amount){
     if (this->machine->currentCard->balance < amount){
-        cout << "[DECLINED] Insufficient balance.\n";
+        cout << "[DECLINED] Insufficient balance.";
     } 
     else if (amount % 100 != 0){
-        cout << "[DECLINED] Amount must be in multiples of 100.\n";
+        cout << "[DECLINED] Amount must be in multiples of 100.";
     } 
     else{
-        cout << "\n--- WITHDRAWING RS. " << amount << " ---\n";
+        cout << "--- WITHDRAWING RS. " << amount << " ---";
         this->machine->cashChain->dispense(amount);
         this->machine->currentCard->balance -= amount;
-        cout << "Remaining Balance: Rs. " << this->machine->currentCard->balance << "\n";
+        cout << "Remaining Balance: Rs. " << this->machine->currentCard->balance << "";
     }
     
     // Always eject card and return to Idle after a dispense attempt
-    cout << "Ejecting card.\n";
+    cout << "Ejecting card.";
     this->machine->currentCard = nullptr;
     this->machine->setState(new IdleState(this->machine));
 }
