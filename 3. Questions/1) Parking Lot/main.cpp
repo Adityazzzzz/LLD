@@ -244,12 +244,10 @@ public:
     }
 };
 
-int main() {
-    // 1. Initialize Strategy and Main System
+int main(){
     PricingStrategy* standardPricing = new DurationBasedPrice();
     ParkingLot* lot = new ParkingLot(standardPricing);
 
-    // 2. Build Infrastructure (Floors and Spots)
     Floor* floor1 = new Floor(1);
     floor1->addSpot(new ParkingSpot(101, VehicleType::BIKE));
     floor1->addSpot(new ParkingSpot(102, VehicleType::CAR));
@@ -261,22 +259,16 @@ int main() {
     lot->addFloor(floor1);
     lot->addFloor(floor2);
 
-    // 3. Initialize Gates
     EntryGate* entryGate = new EntryGate(1, lot);
     ExitGate* exitGate = new ExitGate(2, lot);
 
-    // 4. Create Vehicles using your Factory
     Vehicle* myCar = VehicleFactory::func(VehicleType::CAR, "MP-09-AB-1234");
     Vehicle* myTruck = VehicleFactory::func(VehicleType::TRUCK, "MP-09-XY-9876");
 
-    // 5. Execute Entry Flow
-    cout << "--- ENTRY ---\n";
     Ticket* carTicket = entryGate->processVehicle(myCar);
     Ticket* truckTicket = entryGate->processVehicle(myTruck);
 
-    // 6. Execute Exit Flow with Strategy/Payment Processing
-    cout << "\n--- EXIT ---\n";
-    if (carTicket != nullptr) {
+    if(carTicket != nullptr){
         PaymentMethod* cardPayment = new CardPayment();
         exitGate->processTicket(carTicket, cardPayment);
     }
