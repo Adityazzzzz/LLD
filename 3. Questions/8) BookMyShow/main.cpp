@@ -67,6 +67,8 @@ public:
        :id(id),movie(movie),startTime(start),endTime(end),theatre(theatre),screen(screen){}
 };
 
+
+
 class Booking{
 public:
     string bookingId;
@@ -189,6 +191,8 @@ public:
         }
     }
 };
+
+
 
 class PaymentStrategy{
 public:
