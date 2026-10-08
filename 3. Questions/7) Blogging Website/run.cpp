@@ -105,10 +105,60 @@ public:
 class PostFactory{
 public:
     static Post* createPost(PostType type,int id,string title,string content,User* author){
-        switch (type){
+        switch(type){
             case PostType::TEXT: return new TextPost(id,title,content,author);
             case PostType::IMAGE: return new ImagePost(id,title,content,author);
             default: return nullptr;
         }
     }
 };
+
+class BloggingPlatform{
+private:
+    unordered_map<int,User*> users;
+    unordered_map<int,Post*> posts;
+    int postCounter = 1;
+    int commentCounter = 1;
+public:
+    void registerUser(User* user){
+        users[user->getId()] = user;
+    }
+
+    void subscribeToAuthor(int readerId,int authorId){
+        if(users.count(readerId) && users.count(authorId)){
+            users[authorId]->addSubscriber(users[readerId]);
+        }
+    }
+
+    Post* publishPost(int authorId,PostType type,string title,string content){
+        if(!users.count(authorId)) return nullptr;
+
+        User* author = users[authorId];
+        Post* newPost = PostFactory::createPost(type,postCounter++,title,content,author);
+        posts[newPost->getId()] = newPost;
+
+        // Trigger Observer Pattern Notification
+        author->notifySubscribers(title);
+        
+        return newPost;
+    }
+
+    void addComment(int postId,int authorId,string text){
+        if(posts.count(postId) && users.count(authorId)){
+            Comment* comment = new Comment(commentCounter++,text,users[authorId]);
+            posts[postId]->addComment(comment);
+        }
+    }
+
+    void viewPost(int postId){
+        if(!posts.count(postId)) return;
+        
+        Post* post = posts[postId];
+        post->display();
+        
+        for(auto it:post->getComments()){
+            cout << it->getAuthor()->getName() << ": " << it->getText() << "\n";
+        }
+    }
+};
+
