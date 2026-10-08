@@ -162,3 +162,32 @@ public:
     }
 };
 
+int main() {
+    BloggingPlatform platform;
+
+    User* alice = new User(1,"Alice (Author)");
+    User* bob = new User(2,"Bob (Reader)");
+    User* charlie = new User(3,"Charlie (Reader)");
+
+    platform.registerUser(alice);
+    platform.registerUser(bob);
+    platform.registerUser(charlie);
+
+    //Setup Subscriptions (Observer Pattern)
+    platform.subscribeToAuthor(bob->getId(),alice->getId());
+    platform.subscribeToAuthor(charlie->getId(),alice->getId());
+
+    //Create Posts (Factory Pattern) - This will auto-trigger notifications to Bob and Charlie
+    Post* post1 = platform.publishPost(1,PostType::TEXT,"Design Patterns 101","Let's learn Observer and Factory.");
+    Post* post2 = platform.publishPost(1,PostType::IMAGE,"UML Diagram","https://img.host/uml.png");
+
+    if(post1){
+        platform.addComment(post1->getId(),2,"This completely cleared up my confusion!");
+        platform.addComment(post1->getId(),3,"Can you do State Pattern next?");
+    }
+
+    platform.viewPost(post1->getId());
+    platform.viewPost(post2->getId());
+
+    return 0;
+}
