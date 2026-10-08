@@ -1,23 +1,12 @@
 #include <iostream>
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <memory>
-
 using namespace std;
 
-// ==========================================
-// 1. OBSERVER PATTERN (Notifications)
-// ==========================================
 class ISubscriber {
 public:
     virtual ~ISubscriber() = default;
     virtual void update(const string& message) = 0;
 };
 
-// ==========================================
-// 2. CORE USER ENTITY (Publisher & Subscriber)
-// ==========================================
 class User : public ISubscriber {
 private:
     int id;
@@ -30,7 +19,6 @@ public:
     int getId() { return id; }
     string getName() { return name; }
 
-    // Publisher functionality
     void addSubscriber(ISubscriber* sub) {
         subscribers.push_back(sub);
     }
@@ -42,15 +30,11 @@ public:
         }
     }
 
-    // Subscriber functionality
     void update(const string& message) override {
         cout << "[" << name << "'s Feed] Notification: " << message << "\n";
     }
 };
 
-// ==========================================
-// 3. COMMENT ENTITY
-// ==========================================
 class Comment {
 private:
     int id;
@@ -62,9 +46,6 @@ public:
     User* getAuthor() { return author; }
 };
 
-// ==========================================
-// 4. FACTORY PATTERN (Polymorphic Posts)
-// ==========================================
 enum class PostType { TEXT, IMAGE };
 
 class Post {
@@ -80,7 +61,7 @@ public:
     
     virtual ~Post() = default;
 
-    virtual void display() = 0; // Pure virtual for formatting
+    virtual void display() = 0;
 
     void addComment(Comment* comment) { comments.push_back(comment); }
     int getId() { return id; }
@@ -122,9 +103,6 @@ public:
     }
 };
 
-// ==========================================
-// 5. THE ORCHESTRATOR (Manager)
-// ==========================================
 class BloggingPlatform {
 private:
     unordered_map<int, User*> users;
@@ -167,7 +145,7 @@ public:
         if (!posts.count(postId)) return;
         
         Post* post = posts[postId];
-        post->display(); // Polymorphic render
+        post->display();
         
         cout << "--- Comments (" << post->getComments().size() << ") ---\n";
         for (auto c : post->getComments()) {
@@ -177,9 +155,6 @@ public:
     }
 };
 
-// ==========================================
-// 6. MAIN DRIVER
-// ==========================================
 int main() {
     BloggingPlatform platform;
 
