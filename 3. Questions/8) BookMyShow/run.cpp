@@ -336,5 +336,38 @@ public:
 };
 
 int main(){
-    
+    BookingRepo* repo = new BookingRepo();
+    LockProvider* lockProv = new InMemoryLockProvider();
+    BookingService* service = new BookingService(repo,lockProv);
+
+    Movie* inception = new Movie("M1","Inception",148);
+    Theatre* pvr = new Theatre("T1","PVR Cinemas");
+
+    Screen* screen1 = new Screen("SCR1");
+    screen1->addSeat(new ReclinerSeat("A1",500.0));
+    screen1->addSeat(new RegularSeat("A2",300.0));
+    screen1->addSeat(new RegularSeat("A3",300.0));
+
+    pvr->addScreen(screen1);
+
+    Show* eveningShow = new Show("SH-001",inception,"18:00","21:00",pvr,screen1);
+
+    // Alice and Bob try to book seat A1 at the exact same millisecond
+    thread t1([&](){
+        service->createBooking("User-Alice",eveningShow,{"A1","A2"}); 
+    });
+    thread t2([&](){ 
+        service->createBooking("User-Bob",eveningShow,{"A1","A3"}); 
+    });
+
+    t1.join();
+    t2.join();
+
+    Booking* aliceBooking = repo->get("BKG-1"); // Assuming Alice won the race
+    if(aliceBooking){
+        service->confirmBooking(aliceBooking,PaymentType::UPI);
+    }
+
+    delete service; delete lockProv; delete repo;
+    return 0;
 }
