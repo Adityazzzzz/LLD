@@ -146,3 +146,24 @@ class InMemoryLockProvider:public LockProvider{
     mutex m;
 }
 
+class PaymentStrategy{
+public:
+    virtual ~PaymentStrategy() = default;
+    virtual bool pay(Booking* booking) = 0;
+};
+
+class CardPayment : public PaymentStrategy{
+public:
+    bool pay(Booking* booking) override{
+        cout << "[CARD] Processing Rs. " << booking->amount << " for Booking: " << booking->bookingId << "\n";
+        return true; // Assume success
+    }
+};
+
+class UpiPayment : public PaymentStrategy{
+public:
+    bool pay(Booking* booking) override{
+        cout << "[UPI] Processing Rs. " << booking->amount << " for Booking: " << booking->bookingId << "\n";
+        return true; // Assume success
+    }
+};
