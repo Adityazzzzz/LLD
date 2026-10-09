@@ -210,7 +210,7 @@ public:
     bool isLockedBy(string key,string userId) override{
         lock_guard<mutex> lock(lockMutex);
         if(locks.find(key) != locks.end()){
-            if(locks[key].userId == userId && (locks[key].isPermanent || chrono::system_clock::now() < locks[key].expiryTime)){
+            if(locks[key].userId == userId &&(locks[key].isPermanent || chrono::system_clock::now() < locks[key].expiryTime)){
                 return true;
             }
         }
@@ -246,3 +246,95 @@ public:
         return true; // Assume success
     }
 };
+
+class BookingService{
+private:
+    BookingRepo* bookingRepo;
+    LockProvider* lockProvider;
+    int bookingCounter = 1;
+    mutex m;
+
+    string generateLockKey(string showId,string seatId){
+        return showId + "_" + seatId;
+    }
+public:
+    BookingService(BookingRepo* repo,LockProvider* lockProv){
+        this->bookingRepo = repo;
+        this->lockProvider = lockProv;
+    }
+
+    Booking* createBooking(string userId,Show* show,vector<string> seatIds){
+        int TTL_MINUTES = 8; //TTL
+        double totalAmount = 0.0;
+        vector<string> lockedSeats;
+
+        //Attempt to lock all requested seats concurrently
+        for(string seatId : seatIds){
+            string lockKey = generateLockKey(show->id,seatId);
+            if(lockProvider->tryLock(lockKey,userId,TTL_MINUTES)){
+                lockedSeats.push_back(seatId);
+                totalAmount += show->screen->seats[seatId]->getPrice();
+            } 
+            else{
+                cout << "[FAILED] User " << userId << " could not lock seat " << seatId << ". It is occupied.\n";
+                // Rollback: Release any seats locked during this transaction loop
+                for(string locked : lockedSeats){
+                    lockProvider->unlock(generateLockKey(show->id,locked));
+                }
+                return nullptr;
+            }
+        }
+
+        //Generate Booking object
+        m.lock();
+        string bId = "BKG-" + to_string(bookingCounter++);
+        m.unlock();
+
+        Booking* booking = new Booking(bId,show->id,userId,lockedSeats,totalAmount);
+        bookingRepo->save(booking);
+
+        cout << "[SUCCESS] User " << userId << " locked " << seatIds.size() << " seat(s) for 8 mins. Booking ID: " << bId << "\n";
+        return booking;
+    }
+
+    void confirmBooking(Booking* booking,PaymentType paymentType){
+        //Validate locks haven't expired
+        for(string seatId : booking->seatIds){
+            string lockKey = generateLockKey(booking->showId,seatId);
+            if(!lockProvider->isLockedBy(lockKey,booking->userId)){
+                cout << "[EXPIRED] Payment failed. TTL expired for booking " << booking->bookingId << "\n";
+                booking->status = BookingStatus::FAILED;
+                return;
+            }
+        }
+
+        //Execute Strategy Payment
+        PaymentStrategy* paymentStrat = PaymentStrategyFactory::getStrategy(paymentType);
+        bool success = paymentStrat->pay(booking);
+
+        //Process Result
+        if(success){
+            booking->status = BookingStatus::CONFIRMED;
+            booking->paymentType = paymentType;
+            
+            //Convert temporary locks to permanent bookings
+            for(string seatId : booking->seatIds){
+                lockProvider->makeLockPermanent(generateLockKey(booking->showId,seatId));
+            }
+            cout << ">>> Booking " << booking->bookingId << " CONFIRMED!\n";
+        } 
+        else{
+            //High Concurrency requirement: failed payments free the seat immediately
+            booking->status = BookingStatus::FAILED;
+            for(string seatId : booking->seatIds){
+                lockProvider->unlock(generateLockKey(booking->showId,seatId));
+            }
+            cout << ">>> Payment failed. Locks released for " << booking->bookingId << "\n";
+        }
+        delete paymentStrat;
+    }
+};
+
+int main(){
+    
+}
