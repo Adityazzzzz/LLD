@@ -89,3 +89,60 @@ public:
 
     Show(string id,Movie* movie,string start,string end,Theatre* theatre,Screen* screen) : id(id),movie(movie),startTime(start),endTime(end),theatre(theatre),screen(screen){}
 };
+
+class Booking{
+public:
+    string bookingId;
+    string showId;
+    string userId;
+    vector<string> seatIds;
+    BookingStatus status;
+    PaymentType paymentType;
+    double amount;
+
+    Booking(string bId,string sId,string uId,vector<string> seats,double amt) : bookingId(bId),showId(sId),userId(uId),seatIds(seats),amount(amt),status(BookingStatus::PENDING){}
+};
+
+class BookingRepo{
+private:
+    unordered_map<string,Booking*> bookingDB;
+    mutex m;
+public:
+    void save(Booking* booking){
+        lock_guard<mutex> lock(m);
+
+        bookingDB[booking->bookingId] = booking;
+    }
+
+    Booking* get(string id){
+        lock_guard<mutex> lock(m);
+
+        if(bookingDB.find(id) != bookingDB.end()){
+            return bookingDB[id];
+        }
+        return nullptr;
+    }
+};
+
+// Concurrency
+struct LockData{
+    string userId;
+    chrono::system_clock::time_point expiryTime;
+    bool isPermanent;
+};
+
+class LockProvider{
+public:
+    virtual ~LockProvider() = default;
+
+    virtual bool tryLock(string key,string userId,int ttlMinutes) = 0;
+    virtual void unlock(string key) = 0;
+    virtual bool isLockedBy(string key,string userId) = 0;
+    virtual void makeLockPermanent(string key) = 0;
+};
+
+class InMemoryLockProvider:public LockProvider{
+    unordered_map<string,LockData> locks;
+    mutex m;
+}
+
