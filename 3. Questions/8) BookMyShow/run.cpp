@@ -103,6 +103,7 @@ public:
     Booking(string bId,string sId,string uId,vector<string> seats,double amt) : bookingId(bId),showId(sId),userId(uId),seatIds(seats),amount(amt),status(BookingStatus::PENDING){}
 };
 
+//-------------------------------------------------
 class BookingRepo{
 private:
     unordered_map<string,Booking*> bookingDB;
@@ -142,9 +143,88 @@ public:
 };
 
 class InMemoryLockProvider:public LockProvider{
+private:
     unordered_map<string,LockData> locks;
     mutex m;
-}
+
+    // Background Thread Management for TTL cleanup
+    thread cleanerThread;
+    atomic<bool> isRunning;
+    condition_variable cv;
+
+    void cleanupExpiredLocks(){
+        while(isRunning){
+            unique_lock<mutex> lk(m);
+
+            // Waits 1 minute or wakes up instantly if the destructor triggers 'cv.notify_all()'
+            cv.wait_for(lk,chrono::minutes(1),[this]{ 
+                return !isRunning.load(); 
+            });
+
+            if(!isRunning) break;
+            
+            auto now = chrono::system_clock::now();
+            for(auto it = locks.begin(); it != locks.end(); ){
+                if(!it->second.isPermanent && now > it->second.expiryTime){
+                    cout << "[TTL EXPIRY] Auto-releasing lock for seat key: " << it->first << "\n";
+                    it = locks.erase(it);
+                } 
+                else{
+                    ++it;
+                }
+            }
+        }
+    }
+
+public:
+    InMemoryLockProvider() : isRunning(true){
+        cleanerThread = thread( &InMemoryLockProvider::cleanupExpiredLocks,this);
+    }
+    ~InMemoryLockProvider(){
+        isRunning = false;
+        cv.notify_all();
+        if(cleanerThread.joinable()) cleanerThread.join();
+    }
+
+    bool tryLock(string key,string userId,int ttlMinutes) override{
+        lock_guard<mutex> lock(lockMutex);
+        auto now = chrono::system_clock::now();
+        
+        // If locked by someone else and it hasn't expired
+        if(locks.find(key) != locks.end()){
+            if(locks[key].isPermanent || now < locks[key].expiryTime){
+                return locks[key].userId == userId; // Allowed if it's the same user retrying
+            }
+        }
+
+        // Grant lock
+        locks[key] ={userId,now + chrono::minutes(ttlMinutes),false};
+        return true;
+    }
+
+    void unlock(string key) override{
+        lock_guard<mutex> lock(lockMutex);
+        locks.erase(key);
+    }
+
+    bool isLockedBy(string key,string userId) override{
+        lock_guard<mutex> lock(lockMutex);
+        if(locks.find(key) != locks.end()){
+            if(locks[key].userId == userId && (locks[key].isPermanent || chrono::system_clock::now() < locks[key].expiryTime)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void makeLockPermanent(string key) override{
+        lock_guard<mutex> lock(lockMutex);
+        if(locks.find(key) != locks.end()){
+            locks[key].isPermanent = true;
+        }
+    }
+
+};
 
 class PaymentStrategy{
 public:
@@ -159,7 +239,6 @@ public:
         return true; // Assume success
     }
 };
-
 class UpiPayment : public PaymentStrategy{
 public:
     bool pay(Booking* booking) override{
