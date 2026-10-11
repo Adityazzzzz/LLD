@@ -1,8 +1,8 @@
-#include <iostream>
+#include<iostream>
 using namespace std;
 
-enum class Color{WHITE,BLACK};
-enum class PieceType{KING,KNIGHT};
+enum class Color{ WHITE,BLACK };
+enum class PieceType{ KING,KNIGHT };
 enum class PlayerType{ HUMAN,COMPUTER };
 
 class Board;
