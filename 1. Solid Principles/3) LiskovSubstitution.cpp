@@ -1,4 +1,4 @@
-#include <iostream>
+#include<iostream>
 using namespace std;
 
 // "A derived class should be replaceable with its base class without changing the correctness of the program."
