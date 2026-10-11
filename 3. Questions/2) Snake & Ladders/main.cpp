@@ -1,8 +1,8 @@
 /*
     I am writing inline/header-only classes to save time and simplify compilation for this 45-minute window,but in production,I would separate the implementations into .cpp files
 */
-#include <iostream>
-#include <string>
+#include<iostream>
+#include<string>
 #include "service/Game.hpp"
 #include "model/Player.hpp"
 using namespace std;
