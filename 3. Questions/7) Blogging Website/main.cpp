@@ -7,14 +7,14 @@ public:
     virtual void update(const string& message) = 0;
 };
 
-class User : public ISubscriber{
+class User:public ISubscriber{
 private:
     int id;
     string name;
     vector<ISubscriber*> subscribers;
 
 public:
-    User(int id,string name) : id(id),name(name){}
+    User(int id,string name):id(id),name(name){}
 
     int getId(){ return id; }
     string getName(){ return name; }
@@ -25,7 +25,7 @@ public:
 
     void notifySubscribers(const string& postTitle){
         string msg = "New post from " + name + ": '" + postTitle + "'";
-        for (auto sub : subscribers){
+        for(auto sub:subscribers){
             sub->update(msg);
         }
     }
@@ -41,7 +41,7 @@ private:
     string text;
     User* author;
 public:
-    Comment(int id,string text,User* author) : id(id),text(text),author(author){}
+    Comment(int id,string text,User* author):id(id),text(text),author(author){}
     string getText(){ return text; }
     User* getAuthor(){ return author; }
 };
@@ -57,7 +57,7 @@ protected:
     vector<Comment*> comments;
 public:
     Post(int id,string title,string content,User* author) 
-        : id(id),title(title),content(content),author(author){}
+       :id(id),title(title),content(content),author(author){}
     
     virtual ~Post() = default;
 
@@ -70,10 +70,9 @@ public:
     vector<Comment*>& getComments(){ return comments; }
 };
 
-class TextPost : public Post{
+class TextPost:public Post{
 public:
-    TextPost(int id,string title,string content,User* author) 
-        : Post(id,title,content,author){}
+    TextPost(int id,string title,string content,User* author) : Post(id,title,content,author){}
     
     void display() override{
         cout << "\n[TEXT POST] " << title << " by " << author->getName() << "\n";
@@ -81,10 +80,9 @@ public:
     }
 };
 
-class ImagePost : public Post{
+class ImagePost:public Post{
 public:
-    ImagePost(int id,string title,string url,User* author) 
-        : Post(id,title,url,author){}
+    ImagePost(int id,string title,string url,User* author) : Post(id,title,url,author){}
     
     void display() override{
         cout << "\n[IMAGE POST] " << title << " by " << author->getName() << "\n";
@@ -95,7 +93,7 @@ public:
 class PostFactory{
 public:
     static Post* createPost(PostType type,int id,string title,string content,User* author){
-        switch (type){
+        switch(type){
             case PostType::TEXT: return new TextPost(id,title,content,author);
             case PostType::IMAGE: return new ImagePost(id,title,content,author);
             default: return nullptr;
@@ -116,13 +114,13 @@ public:
     }
 
     void subscribeToAuthor(int readerId,int authorId){
-        if (users.count(readerId) && users.count(authorId)){
+        if(users.count(readerId) && users.count(authorId)){
             users[authorId]->addSubscriber(users[readerId]);
         }
     }
 
     Post* publishPost(int authorId,PostType type,string title,string content){
-        if (!users.count(authorId)) return nullptr;
+        if(!users.count(authorId)) return nullptr;
 
         User* author = users[authorId];
         Post* newPost = PostFactory::createPost(type,postCounter++,title,content,author);
@@ -135,20 +133,20 @@ public:
     }
 
     void addComment(int postId,int authorId,string text){
-        if (posts.count(postId) && users.count(authorId)){
+        if(posts.count(postId) && users.count(authorId)){
             Comment* comment = new Comment(commentCounter++,text,users[authorId]);
             posts[postId]->addComment(comment);
         }
     }
 
     void viewPost(int postId){
-        if (!posts.count(postId)) return;
+        if(!posts.count(postId)) return;
         
         Post* post = posts[postId];
         post->display();
         
-        cout << "--- Comments (" << post->getComments().size() << ") ---\n";
-        for (auto c : post->getComments()){
+        cout << "--- Comments(" << post->getComments().size() << ") ---\n";
+        for(auto c:post->getComments()){
             cout << c->getAuthor()->getName() << ": " << c->getText() << "\n";
         }
         cout << "------------------------------------\n";
@@ -159,25 +157,25 @@ int main(){
     BloggingPlatform platform;
 
     // 1. Register Users
-    User* alice = new User(1,"Alice (Author)");
-    User* bob = new User(2,"Bob (Reader)");
-    User* charlie = new User(3,"Charlie (Reader)");
+    User* alice = new User(1,"Alice(Author)");
+    User* bob = new User(2,"Bob(Reader)");
+    User* charlie = new User(3,"Charlie(Reader)");
 
     platform.registerUser(alice);
     platform.registerUser(bob);
     platform.registerUser(charlie);
 
-    // 2. Setup Subscriptions (Observer Pattern)
+    // 2. Setup Subscriptions(Observer Pattern)
     platform.subscribeToAuthor(bob->getId(),alice->getId());
     platform.subscribeToAuthor(charlie->getId(),alice->getId());
 
     cout << "--- PUBLISHING WORKFLOW ---\n";
-    // 3. Create Posts (Factory Pattern) - This will auto-trigger notifications to Bob and Charlie
+    // 3. Create Posts(Factory Pattern) - This will auto-trigger notifications to Bob and Charlie
     Post* post1 = platform.publishPost(1,PostType::TEXT,"Design Patterns 101","Let's learn Observer and Factory.");
     Post* post2 = platform.publishPost(1,PostType::IMAGE,"UML Diagram","https://img.host/uml.png");
 
     // 4. Engage with Content
-    if (post1){
+    if(post1){
         platform.addComment(post1->getId(),2,"This completely cleared up my confusion!");
         platform.addComment(post1->getId(),3,"Can you do State Pattern next?");
     }
