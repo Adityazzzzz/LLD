@@ -66,9 +66,10 @@ VendingMachine::VendingMachine(int initialInventory){
     this->inventory = initialInventory;
     this->currentBalance = 0;
     
-    if (initialInventory > 0){
+    if(initialInventory > 0){
         this->state = new NoCoinState();
-    } else{
+    } 
+    else{
         this->state = new SoldOutState();
     }
 }
@@ -92,14 +93,14 @@ void HasCoinState::insertCoin(VendingMachine* m,int amount){
 }
 
 void HasCoinState::selectItem(VendingMachine* m){
-    if (m->getInventory() == 0){
+    if(m->getInventory() == 0){
         cout << "[DECLINED] Item is sold out. Refunding Rs. " << m->getBalance() << "\n";
         m->clearBalance();
         m->setState(new SoldOutState());
         return;
     }
 
-    if (m->getBalance() < m->getPrice()){
+    if(m->getBalance() < m->getPrice()){
         cout << "[DECLINED] Insufficient funds. Price is Rs. " << m->getPrice() 
              << ",but you only have Rs. " << m->getBalance() << "\n";
         return;
@@ -116,15 +117,16 @@ void DispenseState::dispense(VendingMachine* m){
     int change = m->getBalance() - m->getPrice();
     
     cout << "\n--- DISPENSING ITEM ---\n";
-    if (change > 0){
+    if(change > 0){
         cout << "Returning change: Rs. " << change << "\n";
     }
     
     m->clearBalance();
     
-    if (m->getInventory() > 0){
+    if(m->getInventory() > 0){
         m->setState(new NoCoinState());
-    } else{
+    } 
+    else{
         cout << "[NOTICE] Machine is now SOLD OUT.\n";
         m->setState(new SoldOutState());
     }
