@@ -21,7 +21,7 @@ public:
             case VehicleType::CAR: rate = 20.0; break;
             case VehicleType::TRUCK: rate = 30.0; break;
         }
-        int billableHours =(hours < 1) ? 1 : hours;
+        int billableHours =(hours < 1) ? 1:hours;
         
         return billableHours * rate;
     }
@@ -35,13 +35,13 @@ public:
     virtual void pay(double amount) = 0;
     virtual ~PaymentMethod(){}
 };
-class CashPayment : public PaymentMethod{
+class CashPayment:public PaymentMethod{
 public:
     void pay(double amount) override{
         cout << "Paid Rs. " << amount << " using Cash\n";
     }
 };
-class CardPayment : public PaymentMethod{
+class CardPayment:public PaymentMethod{
 public:
     void pay(double amount) override{
         cout << "Paid Rs. " << amount << " using Card\n";
@@ -139,7 +139,7 @@ public:
         spots[spot->getId()] = spot;
     }
     ParkingSpot* findAvailableSpot(Vehicle* vehicle){
-        for(auto const& [spotId,spot] : spots){
+        for(auto const& [spotId,spot]:spots){
             if(spot->canFit(vehicle)){
                 return spot;
             }
@@ -157,7 +157,7 @@ private:
     double fee;
 public:
     Ticket(int id,Vehicle* vehicle,ParkingSpot* spot) 
-        : id(id),vehicle(vehicle),spot(spot),fee(0){
+       :id(id),vehicle(vehicle),spot(spot),fee(0){
         entryTime = time(nullptr);
     }
 
@@ -186,7 +186,7 @@ public:
     }
 
     Ticket* parkVehicle(Vehicle* vehicle){
-        for(auto const& [floorId, floor] : floors){
+        for(auto const& [floorId, floor]:floors){
             ParkingSpot* spot = floor->findAvailableSpot(vehicle);
             if(spot != nullptr){
                 spot->park(vehicle);

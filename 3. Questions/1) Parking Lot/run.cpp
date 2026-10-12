@@ -210,16 +210,16 @@ public:
     ParkingLot(PricingStrategy* strategy) : pricingStrategy(strategy){}
 
     void addFloor(Floor* floor){
-        // Assuming floor IDs are 1, 2, 3...
+        // Assuming floor IDs are 1,2,3...
         floors[floors.size() + 1] = floor; 
     }
 
     Ticket* parkVehicle(Vehicle* vehicle){
-        for(auto const& [floorId, floor] : floors){
+        for(auto const& [floorId,floor] : floors){
             ParkingSpot* spot = floor->findAvailableSpot(vehicle);
             if(spot != nullptr){
                 spot->park(vehicle);
-                Ticket* ticket = new Ticket(ticketCounter++, vehicle, spot);
+                Ticket* ticket = new Ticket(ticketCounter++,vehicle,spot);
                 cout << "Parked at Spot: " << spot->getId() << "\n";
                 return ticket;
             }
@@ -228,11 +228,11 @@ public:
         return nullptr;
     }
 
-    double exitVehicle(Ticket* ticket, PaymentMethod* payment){
+    double exitVehicle(Ticket* ticket,PaymentMethod* payment){
         // Mocking 2 hours for the interview output
         int hoursParked = 2; 
         
-        double price = pricingStrategy->calPrice(hoursParked, ticket->getVehicle()->getType());
+        double price = pricingStrategy->calPrice(hoursParked,ticket->getVehicle()->getType());
         ticket->close(price);
         
         payment->pay(price);
@@ -243,41 +243,39 @@ public:
     }
 };
 
-int main() {
-    // 1. Initialize Strategy and Main System
+int main(){
+    //Initialize Strategy and Main System
     PricingStrategy* standardPricing = new DurationBasedPrice();
     ParkingLot* lot = new ParkingLot(standardPricing);
 
-    // 2. Build Infrastructure (Floors and Spots)
+    //Build Infrastructure (Floors and Spots)
     Floor* floor1 = new Floor(1);
-    floor1->addSpot(new ParkingSpot(101, VehicleType::BIKE));
-    floor1->addSpot(new ParkingSpot(102, VehicleType::CAR));
-    floor1->addSpot(new ParkingSpot(103, VehicleType::CAR));
+    floor1->addSpot(new ParkingSpot(101,VehicleType::BIKE));
+    floor1->addSpot(new ParkingSpot(102,VehicleType::CAR));
+    floor1->addSpot(new ParkingSpot(103,VehicleType::CAR));
 
     Floor* floor2 = new Floor(2);
-    floor2->addSpot(new ParkingSpot(201, VehicleType::TRUCK));
+    floor2->addSpot(new ParkingSpot(201,VehicleType::TRUCK));
 
     lot->addFloor(floor1);
     lot->addFloor(floor2);
 
-    // 3. Initialize Gates
-    EntryGate* entryGate = new EntryGate(1, lot);
-    ExitGate* exitGate = new ExitGate(2, lot);
+    //Initialize Gates
+    EntryGate* entryGate = new EntryGate(1,lot);
+    ExitGate* exitGate = new ExitGate(2,lot);
 
-    // 4. Create Vehicles using your Factory
-    Vehicle* myCar = VehicleFactory::func(VehicleType::CAR, "MP-09-AB-1234");
-    Vehicle* myTruck = VehicleFactory::func(VehicleType::TRUCK, "MP-09-XY-9876");
+    //Create Vehicles using your Factory
+    Vehicle* myCar = VehicleFactory::func(VehicleType::CAR,"MP-09-AB-1234");
+    Vehicle* myTruck = VehicleFactory::func(VehicleType::TRUCK,"MP-09-XY-9876");
 
-    // 5. Execute Entry Flow
-    cout << "--- ENTRY ---\n";
+    //Execute Entry Flow
     Ticket* carTicket = entryGate->processVehicle(myCar);
     Ticket* truckTicket = entryGate->processVehicle(myTruck);
 
-    // 6. Execute Exit Flow with Strategy/Payment Processing
-    cout << "\n--- EXIT ---\n";
-    if (carTicket != nullptr) {
+    //Execute Exit Flow with Strategy/Payment Processing
+    if(carTicket != nullptr){
         PaymentMethod* cardPayment = new CardPayment();
-        exitGate->processTicket(carTicket, cardPayment);
+        exitGate->processTicket(carTicket,cardPayment);
     }
 
     return 0;
