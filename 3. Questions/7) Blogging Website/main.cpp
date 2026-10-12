@@ -14,7 +14,7 @@ private:
     vector<ISubscriber*> subscribers;
 
 public:
-    User(int id,string name):id(id),name(name){}
+    User(int id,string name) : id(id),name(name){}
 
     int getId(){ return id; }
     string getName(){ return name; }
@@ -41,7 +41,7 @@ private:
     string text;
     User* author;
 public:
-    Comment(int id,string text,User* author):id(id),text(text),author(author){}
+    Comment(int id,string text,User* author) : id(id),text(text),author(author){}
     string getText(){ return text; }
     User* getAuthor(){ return author; }
 };
@@ -56,8 +56,7 @@ protected:
     User* author;
     vector<Comment*> comments;
 public:
-    Post(int id,string title,string content,User* author) 
-       :id(id),title(title),content(content),author(author){}
+    Post(int id,string title,string content,User* author) : id(id),title(title),content(content),author(author){}
     
     virtual ~Post() = default;
 
@@ -156,7 +155,7 @@ public:
 int main(){
     BloggingPlatform platform;
 
-    // 1. Register Users
+    //Register Users
     User* alice = new User(1,"Alice(Author)");
     User* bob = new User(2,"Bob(Reader)");
     User* charlie = new User(3,"Charlie(Reader)");
@@ -165,22 +164,22 @@ int main(){
     platform.registerUser(bob);
     platform.registerUser(charlie);
 
-    // 2. Setup Subscriptions(Observer Pattern)
+    //Setup Subscriptions(Observer Pattern)
     platform.subscribeToAuthor(bob->getId(),alice->getId());
     platform.subscribeToAuthor(charlie->getId(),alice->getId());
 
     cout << "--- PUBLISHING WORKFLOW ---\n";
-    // 3. Create Posts(Factory Pattern) - This will auto-trigger notifications to Bob and Charlie
+    //Create Posts(Factory Pattern) - This will auto-trigger notifications to Bob and Charlie
     Post* post1 = platform.publishPost(1,PostType::TEXT,"Design Patterns 101","Let's learn Observer and Factory.");
     Post* post2 = platform.publishPost(1,PostType::IMAGE,"UML Diagram","https://img.host/uml.png");
 
-    // 4. Engage with Content
+    //Engage with Content
     if(post1){
         platform.addComment(post1->getId(),2,"This completely cleared up my confusion!");
         platform.addComment(post1->getId(),3,"Can you do State Pattern next?");
     }
 
-    // 5. Polymorphic Viewing
+    //Polymorphic Viewing
     platform.viewPost(post1->getId());
     platform.viewPost(post2->getId());
 
