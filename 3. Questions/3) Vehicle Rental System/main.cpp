@@ -212,7 +212,8 @@ public:
             cout << "Processing return for " << bookingId << "...\n";
             payment->pay(booking->getAmount());
             cout << "Vehicle " << booking->getVehicle()->getNumber() << " successfully returned.\n";
-        } else{
+        } 
+        else{
             cout << "Invalid Booking ID.\n";
         }
     }
