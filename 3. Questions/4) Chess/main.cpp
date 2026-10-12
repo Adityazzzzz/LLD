@@ -99,8 +99,8 @@ public:
     }
 
     bool canMove(Cell* src,Cell* dest,Board* board){
-        for (auto strategy:strategies){
-            if (strategy->isValidMove(src,dest,board)){
+        for(auto strategy:strategies){
+            if(strategy->isValidMove(src,dest,board)){
                 return true;
             }
         }
@@ -128,7 +128,7 @@ class PieceFactory{
 public:
     static Piece* createPiece(PieceType type,Color color){
         Piece* piece = nullptr;
-        switch (type){
+        switch(type){
             case PieceType::KING:
                 piece = new King(color);
                 piece->addStrategy(new KingMoveStrategy());
@@ -148,14 +148,14 @@ private:
 public:
     Board(){
         grid.resize(8,vector<Cell*>(8,nullptr));
-        for (int i = 0; i < 8; i++){
-            for (int j = 0; j < 8; j++){
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
                 grid[i][j] = new Cell(i,j);
             }
         }
     }
     Cell* getCell(int r,int c){
-        if (r < 0 || r > 7 || c < 0 || c > 7) return nullptr;
+        if(r < 0 || r > 7 || c < 0 || c > 7) return nullptr;
         return grid[r][c];
     }
 };
@@ -167,7 +167,7 @@ private:
     vector<Spectator*> spectators;
 
     void notifySpectators(string msg){
-        for (auto spectator:spectators){
+        for(auto spectator:spectators){
             spectator->update(msg);
         }
     }
@@ -192,7 +192,7 @@ public:
         Cell* src = board->getCell(startRow,startCol);
         Cell* dest = board->getCell(endRow,endCol);
 
-        if (!src || !dest || !src->getPiece()){
+        if(!src || !dest || !src->getPiece()){
             cout << "Invalid selection.\n";
             return false;
         }
@@ -200,17 +200,17 @@ public:
         Piece* pieceToMove = src->getPiece();
         Piece* destPiece = dest->getPiece();
 
-        if (destPiece != nullptr && destPiece->getColor() == pieceToMove->getColor()){
+        if(destPiece != nullptr && destPiece->getColor() == pieceToMove->getColor()){
             cout << "Cannot attack your own piece.\n";
             return false;
         }
 
-        if (!pieceToMove->canMove(src,dest,board)){
+        if(!pieceToMove->canMove(src,dest,board)){
             cout << "Invalid move for this piece type.\n";
             return false;
         }
 
-        if (destPiece != nullptr){
+        if(destPiece != nullptr){
             destPiece->setIsKilled(true);
         }
         
@@ -221,14 +221,14 @@ public:
         moveHistory.push(currentMove);
 
         string moveInfo = "Piece moved to (" + to_string(endRow) + "," + to_string(endCol) + ")";
-        if (destPiece) moveInfo += " - CAPTURE!";
+        if(destPiece) moveInfo += " - CAPTURE!";
         notifySpectators(moveInfo);
 
         return true;
     }
 
     void undoMove(){
-        if (moveHistory.empty()){
+        if(moveHistory.empty()){
             cout << "No moves to undo.\n";
             return;
         }
@@ -244,7 +244,7 @@ public:
         src->setPiece(movedPiece);
         dest->setPiece(killedPiece);
 
-        if (killedPiece != nullptr){
+        if(killedPiece != nullptr){
             killedPiece->setIsKilled(false);
         }
 
