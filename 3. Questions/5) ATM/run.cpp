@@ -186,7 +186,7 @@ void IdleState::insertCard(Card* card){
 }
 
 void CardInsertedState::enterPin(string pin){
-    if (this->machine->currentCard->pin == pin){
+    if(this->machine->currentCard->pin == pin){
         cout << "PIN Verified.";
         this->machine->setState(new AuthenticatedState(this->machine));
     } 
@@ -203,7 +203,7 @@ void CardInsertedState::ejectCard(){
 }
 
 void AuthenticatedState::selectOption(string option){
-    if (option == "WITHDRAW"){
+    if(option == "WITHDRAW"){
         cout << "Option: WITHDRAW selected.";
         this->machine->setState(new DispenseCashState(this->machine));
     } 
@@ -220,10 +220,10 @@ void AuthenticatedState::ejectCard(){
 }
 
 void DispenseCashState::dispenseCash(int amount){
-    if (this->machine->currentCard->balance < amount){
+    if(this->machine->currentCard->balance < amount){
         cout << "[DECLINED] Insufficient balance.";
     } 
-    else if (amount % 100 != 0){
+    else if(amount % 100 != 0){
         cout << "[DECLINED] Amount must be in multiples of 100.";
     } 
     else{
