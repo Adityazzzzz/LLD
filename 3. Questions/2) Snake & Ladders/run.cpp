@@ -3,10 +3,10 @@ using namespace std;
 
 //enums
 enum class ObstacleType{
-    SNAKE, LADDER
+    SNAKE,LADDER
 };
 
-//entities- snake,ladder,board,player,dice, obstacles
+//entities- snake,ladder,board,player,dice,obstacles
 class Player{
 private:
     string name;
@@ -146,10 +146,10 @@ public:
 int main(){
     Game game(100,2);
 
-    game.addObstacle(ObstacleType::SNAKE, 99, 10);
-    game.addObstacle(ObstacleType::SNAKE, 50, 5);
-    game.addObstacle(ObstacleType::LADDER, 14, 48);
-    game.addObstacle(ObstacleType::LADDER, 42, 88);
+    game.addObstacle(ObstacleType::SNAKE,99,10);
+    game.addObstacle(ObstacleType::SNAKE,50,5);
+    game.addObstacle(ObstacleType::LADDER,14,48);
+    game.addObstacle(ObstacleType::LADDER,42,88);
 
     game.addPlayer("Alice");
     game.addPlayer("Bob");
