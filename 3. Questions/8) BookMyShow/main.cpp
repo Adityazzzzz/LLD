@@ -27,13 +27,13 @@ public:
 
 class RegularSeat:public Seat{
 public:
-    RegularSeat(string id,double price):Seat(id,price){}
+    RegularSeat(string id,double price) : Seat(id,price){}
     SeatType getType() override{ return SeatType::REGULAR; }
 };
 
 class ReclinerSeat:public Seat{
 public:
-    ReclinerSeat(string id,double price):Seat(id,price){}
+    ReclinerSeat(string id,double price) : Seat(id,price){}
     SeatType getType() override{ return SeatType::RECLINER; }
 };
 
@@ -63,8 +63,7 @@ public:
     Theatre* theatre;
     Screen* screen;
 
-    Show(string id,Movie* movie,string start,string end,Theatre* theatre,Screen* screen)
-       :id(id),movie(movie),startTime(start),endTime(end),theatre(theatre),screen(screen){}
+    Show(string id,Movie* movie,string start,string end,Theatre* theatre,Screen* screen) : id(id),movie(movie),startTime(start),endTime(end),theatre(theatre),screen(screen){}
 };
 
 
@@ -79,8 +78,7 @@ public:
     PaymentType paymentType;
     double amount;
 
-    Booking(string bId,string sId,string uId,vector<string> seats,double amt)
-       :bookingId(bId),showId(sId),userId(uId),seatIds(seats),amount(amt),status(BookingStatus::PENDING){}
+    Booking(string bId,string sId,string uId,vector<string> seats,double amt) : bookingId(bId),showId(sId),userId(uId),seatIds(seats),amount(amt),status(BookingStatus::PENDING){}
 };
 
 class BookingRepo{
@@ -136,7 +134,8 @@ private:
                 if(!it->second.isPermanent && now > it->second.expiryTime){
                     cout << "[TTL EXPIRY] Auto-releasing lock for seat key: " << it->first << "\n";
                     it = locks.erase(it);
-                } else{
+                } 
+                else{
                     ++it;
                 }
             }
@@ -253,7 +252,8 @@ public:
             if(lockProvider->tryLock(lockKey,userId,TTL_MINUTES)){
                 lockedSeats.push_back(seatId);
                 totalAmount += show->screen->seats[seatId]->getPrice();
-            } else{
+            } 
+            else{
                 cout << "[FAILED] User " << userId << " could not lock seat " << seatId << ". It is occupied.\n";
                 // Rollback: Release any seats locked during this transaction loop
                 for(string locked:lockedSeats){
