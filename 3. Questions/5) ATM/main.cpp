@@ -17,7 +17,7 @@ private:
     string accountNumber;
     double balance;
 public:
-    Account(string accountNumber, double balance){
+    Account(string accountNumber,double balance){
         this->accountNumber = accountNumber;
         this->balance = balance;
     }
@@ -36,7 +36,7 @@ private:
     string pin;
     Account* account;
 public:
-    Card(string cardNumber, string pin, Account* account){
+    Card(string cardNumber,string pin,Account* account){
         this->cardNumber = cardNumber;
         this->pin = pin;
         this->account = account;
@@ -56,7 +56,7 @@ private:
     int fiveHundredCount;
     int oneHundredCount;
 public:
-    ATM(string id, int twoThousandCount, int fiveHundredCount, int oneHundredCount){
+    ATM(string id,int twoThousandCount,int fiveHundredCount,int oneHundredCount){
         this->id = id;
         this->status = ATMStatus::IDLE;
         this->twoThousandCount = twoThousandCount;
@@ -92,7 +92,7 @@ public:
 
 class ATMRepository{
 private:
-    unordered_map<string, ATM*> atms;
+    unordered_map<string,ATM*> atms;
 public:
     void save(ATM* atm){
         this->atms[atm->getId()] = atm;
@@ -105,7 +105,7 @@ public:
         return nullptr;
     }
 
-    void updateATMStatusById(string id, ATMStatus newStatus){
+    void updateATMStatusById(string id,ATMStatus newStatus){
         ATM* atm = getById(id);
         if(atm != nullptr){
             atm->setStatus(newStatus);
@@ -126,27 +126,27 @@ public:
         this->nextCashDispenser = nextCashDispenser;
     }
 
-    virtual bool canDispense(ATM* atm, int amount) = 0;
-    virtual void dispense(ATM* atm, int amount) = 0;
+    virtual bool canDispense(ATM* atm,int amount) = 0;
+    virtual void dispense(ATM* atm,int amount) = 0;
 };
 
 class TwoThousandDispenser : public CashDispenser{
 public:
-    bool canDispense(ATM* atm, int amount) override{
+    bool canDispense(ATM* atm,int amount) override{
         int notesNeeded = amount / 2000;
-        int notesToUse = min(notesNeeded, atm->getTwoThousandCount());
+        int notesToUse = min(notesNeeded,atm->getTwoThousandCount());
         int remainder = amount - (notesToUse * 2000);
 
         if(remainder == 0) return true;
         if(this->nextCashDispenser != nullptr){
-            return this->nextCashDispenser->canDispense(atm, remainder);
+            return this->nextCashDispenser->canDispense(atm,remainder);
         }
         return false;
     }
 
-    void dispense(ATM* atm, int amount) override{
+    void dispense(ATM* atm,int amount) override{
         int notesNeeded = amount / 2000;
-        int notesToUse = min(notesNeeded, atm->getTwoThousandCount());
+        int notesToUse = min(notesNeeded,atm->getTwoThousandCount());
         int remainder = amount - (notesToUse * 2000);
 
         if(notesToUse > 0){
@@ -155,28 +155,28 @@ public:
         }
 
         if(remainder > 0 && this->nextCashDispenser != nullptr){
-            this->nextCashDispenser->dispense(atm, remainder);
+            this->nextCashDispenser->dispense(atm,remainder);
         }
     }
 };
 
 class FiveHundredDispenser : public CashDispenser{
 public:
-    bool canDispense(ATM* atm, int amount) override{
+    bool canDispense(ATM* atm,int amount) override{
         int notesNeeded = amount / 500;
-        int notesToUse = min(notesNeeded, atm->getFiveHundredCount());
+        int notesToUse = min(notesNeeded,atm->getFiveHundredCount());
         int remainder = amount - (notesToUse * 500);
 
         if(remainder == 0) return true;
         if(this->nextCashDispenser != nullptr){
-            return this->nextCashDispenser->canDispense(atm, remainder);
+            return this->nextCashDispenser->canDispense(atm,remainder);
         }
         return false;
     }
 
-    void dispense(ATM* atm, int amount) override{
+    void dispense(ATM* atm,int amount) override{
         int notesNeeded = amount / 500;
-        int notesToUse = min(notesNeeded, atm->getFiveHundredCount());
+        int notesToUse = min(notesNeeded,atm->getFiveHundredCount());
         int remainder = amount - (notesToUse * 500);
 
         if(notesToUse > 0){
@@ -185,28 +185,28 @@ public:
         }
 
         if(remainder > 0 && this->nextCashDispenser != nullptr){
-            this->nextCashDispenser->dispense(atm, remainder);
+            this->nextCashDispenser->dispense(atm,remainder);
         }
     }
 };
 
 class OneHundredDispenser : public CashDispenser{
 public:
-    bool canDispense(ATM* atm, int amount) override{
+    bool canDispense(ATM* atm,int amount) override{
         int notesNeeded = amount / 100;
-        int notesToUse = min(notesNeeded, atm->getOneHundredCount());
+        int notesToUse = min(notesNeeded,atm->getOneHundredCount());
         int remainder = amount - (notesToUse * 100);
 
         if(remainder == 0) return true;
         if(this->nextCashDispenser != nullptr){
-            return this->nextCashDispenser->canDispense(atm, remainder);
+            return this->nextCashDispenser->canDispense(atm,remainder);
         }
         return false;
     }
 
-    void dispense(ATM* atm, int amount) override{
+    void dispense(ATM* atm,int amount) override{
         int notesNeeded = amount / 100;
-        int notesToUse = min(notesNeeded, atm->getOneHundredCount());
+        int notesToUse = min(notesNeeded,atm->getOneHundredCount());
         int remainder = amount - (notesToUse * 100);
 
         if(notesToUse > 0){
@@ -215,7 +215,7 @@ public:
         }
 
         if(remainder > 0 && this->nextCashDispenser != nullptr){
-            this->nextCashDispenser->dispense(atm, remainder);
+            this->nextCashDispenser->dispense(atm,remainder);
         }
     }
 };
@@ -238,12 +238,12 @@ private:
     ATMRepository* atmRepository;
     Card* currentCard;
 public:
-    ATMMachine(ATM* atm, ATMRepository* atmRepository);
+    ATMMachine(ATM* atm,ATMRepository* atmRepository);
 
     void setState(ATMState* newState){
         this->state = newState;
         this->atm->setStatus(newState->getStatus());
-        this->atmRepository->updateATMStatusById(this->atm->getId(), newState->getStatus());
+        this->atmRepository->updateATMStatusById(this->atm->getId(),newState->getStatus());
     }
 
     ATM* getAtm(){ return this->atm; }
@@ -396,7 +396,7 @@ public:
         }
 
         // 3. Denomination availability check via Chain
-        if(!this->chain->canDispense(atm, amount)){
+        if(!this->chain->canDispense(atm,amount)){
             cout << "[DECLINED] ATM cannot satisfy exact amount with current denominations.\n";
             this->atmMachine->ejectCard();
             return;
@@ -404,7 +404,7 @@ public:
 
         // 4. Execute physical dispense and balance updates
         cout << "\n--- DISPENSING CASH (Rs. " << amount << ") ---\n";
-        this->chain->dispense(atm, amount);
+        this->chain->dispense(atm,amount);
         account->debit(amount);
         cout << "Withdrawal complete. Remaining Account Balance: Rs. " << account->getBalance() << "\n";
 
@@ -419,7 +419,7 @@ public:
     }
 };
 
-ATMMachine::ATMMachine(ATM* atm, ATMRepository* atmRepository){
+ATMMachine::ATMMachine(ATM* atm,ATMRepository* atmRepository){
     this->atm = atm;
     this->atmRepository = atmRepository;
     this->currentCard = nullptr;
@@ -456,7 +456,8 @@ void AuthenticatedState::selectOption(string option){
     if(option == "WITHDRAW"){
         cout << "Option selected: WITHDRAW. Please enter withdrawal amount.\n";
         this->atmMachine->setState(new DispenseCashState(this->atmMachine));
-    } else{
+    } 
+    else{
         cout << "Option not supported yet. Ejecting card.\n";
         this->atmMachine->ejectCard();
     }
@@ -475,15 +476,15 @@ void DispenseCashState::ejectCard(){
 }
 
 int main(){
-    Account* myAccount = new Account("ACC_998877", 25000.0);
-    Card* myCard = new Card("CARD_1234_5678", "4321", myAccount);
+    Account* myAccount = new Account("ACC_998877",25000.0);
+    Card* myCard = new Card("CARD_1234_5678","4321",myAccount);
 
-    ATM* atm1 = new ATM("ATM_DELHI_01", 2, 5, 10);
+    ATM* atm1 = new ATM("ATM_DELHI_01",2,5,10);
 
     ATMRepository* repository = new ATMRepository();
     repository->save(atm1);
 
-    ATMMachine* machine = new ATMMachine(atm1, repository);
+    ATMMachine* machine = new ATMMachine(atm1,repository);
 
     cout << "=== SCENARIO 1: WRONG PIN FLOW ===\n";
     machine->insertCard(myCard);
