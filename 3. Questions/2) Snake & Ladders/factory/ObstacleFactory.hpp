@@ -1,5 +1,5 @@
 #pragma once
-#include <stdexcept>
+#include<stdexcept>
 #include "../enums/ObstacleType.hpp"
 #include "../entities/Obstacle.hpp"
 #include "../entities/Snake.hpp"

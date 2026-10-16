@@ -1,7 +1,7 @@
 #pragma once
-#include <iostream>
-#include <queue>
-#include <cstdlib>
+#include<iostream>
+#include<queue>
+#include<cstdlib>
 #include "../enums/ObstacleType.hpp"
 #include "../factory/ObstacleFactory.hpp"
 #include "../entities/Board.hpp"
