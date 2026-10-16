@@ -1,8 +1,10 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+//enum
 enum class SplitType{ EQUAL,PERCENTAGE };
 
+//entities
 class User{
 public:
     string id;
@@ -54,5 +56,83 @@ public:
         if(paidBy == paidTo) return;
         balances[paidTo][paidBy] += amount;
         balances[paidBy][paidTo] -= amount;
+    }
+};
+
+class Group{
+public:
+    string id;
+    string name;
+    vector<User*> members;
+    vector<Expense*> expenses;
+    BalanceSheet* balanceSheet;
+
+    Group(string id,string name){
+        balanceSheet = new BalanceSheet();
+        this->id = id;
+        this->name = name;
+    }
+    void addMember(User* user){ 
+        members.push_back(user); 
+    }
+    void addExpense(Expense* expense){ 
+        expenses.push_back(expense);
+    }
+};
+
+class GroupRepo{
+private:
+    unordered_map<string,Group*> groups;
+public:
+    void save(Group* group){ 
+        groups[group->id] = group; 
+    }
+    Group* findById(string id){
+        if(groups.find(id) != groups.end()) return groups[id];
+        return nullptr;
+    }
+};
+
+//strategy
+class SplitStrategy{
+public:
+    virtual ~SplitStrategy() = default;
+    virtual bool split(double totalAmount,vector<Split*>& splits) = 0;
+};
+
+class EqualSplitStrategy:public SplitStrategy{
+public:
+    bool split(double totalAmount,vector<Split*>& splits) override{
+        if(splits.empty()) return false;
+        
+        double splitAmount = totalAmount / splits.size();
+        for(Split* s:splits){
+            s->amount = splitAmount;
+        }
+        return true;
+    }
+};
+
+class PercentageSplitStrategy:public SplitStrategy{
+public:
+    bool split(double totalAmount,vector<Split*>& splits) override{
+        double totalPercent = 0;
+        for(Split* s:splits){
+            totalPercent += s->percentage;
+            s->amount = (totalAmount * s->percentage) / 100.0;
+        }
+
+        return abs(totalPercent - 100.0) < 0.001;
+    }
+};
+
+class SplitStrategyFactory{
+public:
+    static SplitStrategy* getStrategy(SplitType type){
+        switch(type){
+            case SplitType::EQUAL: return new EqualSplitStrategy();
+            case SplitType::PERCENTAGE: return new PercentageSplitStrategy();
+            default: return nullptr;
+        }
     }
 };
