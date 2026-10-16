@@ -119,7 +119,7 @@ public:
         double totalPercent = 0;
         for(Split* s:splits){
             totalPercent += s->percentage;
-            s->amount = (totalAmount * s->percentage) / 100.0;
+            s->amount =(totalAmount * s->percentage) / 100.0;
         }
 
         return abs(totalPercent - 100.0) < 0.001;
@@ -134,5 +134,33 @@ public:
             case SplitType::PERCENTAGE: return new PercentageSplitStrategy();
             default: return nullptr;
         }
+    }
+};
+
+//services
+class BalanceSheetService{
+public:
+    void updateBalaces(Group* group,Expense* expense){
+        BalanceSheet* sheet = group->balanceSheet;
+        sheet->totalPaid[expense->paidBy->name] += expense->amount;
+
+        for(Split* it:expense->splits){
+            sheet->totalExpense[it->user->name] += it->amount;
+            sheet->updateLedger(expense->paidBy->name,it->user->name,it->amount);
+        }
+    }
+
+    void printGroupBalances(Group* group){
+        cout<<group->name<<endl;
+
+        bool isSettled = true;
+        for(auto const& [userId,userBalances] : group->balanceSheet->balances){
+            for(auto const& [otherUser,amount] : userBalances){
+                if(amount > 0.01){ 
+                    isSettled = false;
+                }
+            }
+        }
+        if(isSettled) cout << "All balances are settled!\n";
     }
 };
