@@ -7,7 +7,7 @@ class VendingMachineState{
 public:
     virtual ~VendingMachineState() = default;
 
-    virtual VendingMachine* insertCoin(VendingMachine* m, int amount){ 
+    virtual VendingMachine* insertCoin(VendingMachine* m,int amount){ 
         cout << "err"; 
         return m; 
     }
@@ -19,7 +19,7 @@ public:
         cout << "err"; 
         return m; 
     }
-    virtual VendingMachine* refill(VendingMachine* m, int qty){ 
+    virtual VendingMachine* refill(VendingMachine* m,int qty){ 
         cout << "err"; 
         return m; 
     }
@@ -133,7 +133,7 @@ VendingMachine* DispenseState::dispense(VendingMachine* m){
     return m;
 }
 
-VendingMachine* SoldOutState::refill(VendingMachine* m, int qty){
+VendingMachine* SoldOutState::refill(VendingMachine* m,int qty){
     m->setInventory(m->getInventory() + qty);
     m->setState(new NoCoinState());
     return m;
