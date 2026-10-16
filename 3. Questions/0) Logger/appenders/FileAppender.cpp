@@ -1,5 +1,5 @@
 #include "LogAppender.cpp"
-#include <fstream>
+#include<fstream>
 using namespace std;
 
 class FileAppender : public LogAppender{
@@ -7,7 +7,7 @@ private:
     string fileName;
 
 public:
-    FileAppender(LogFormatter* formatter, string fileName) : LogAppender(formatter){
+    FileAppender(LogFormatter* formatter,string fileName) : LogAppender(formatter){
         this->fileName=fileName;
     }
 

@@ -12,7 +12,7 @@ int main(){
 
     // Appenders
     LogAppender* console = new ConsoleAppender(formatter);
-    LogAppender* file = new FileAppender(formatter, "logs.txt");
+    LogAppender* file = new FileAppender(formatter,"logs.txt");
 
     // Handlers
     InfoHandler info;

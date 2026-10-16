@@ -1,6 +1,6 @@
 #include "../handlers/LogHandler.cpp"
 #include "../models/LogMessage.cpp"
-#include <chrono>
+#include<chrono>
 using namespace std;
 
 class Logger{
@@ -27,8 +27,8 @@ public:
         );
     }
 
-    void log(LogLevel level, string message){
-        LogMessage log(level, message, getCurrentTime());
+    void log(LogLevel level,string message){
+        LogMessage log(level,message,getCurrentTime());
 
         if(handler){
             handler->handle(log);
@@ -36,14 +36,14 @@ public:
     }
 
     void info(string message){
-        log(LogLevel::INFO, message);
+        log(LogLevel::INFO,message);
     }
 
     void warn(string message){
-        log(LogLevel::WARN, message);
+        log(LogLevel::WARN,message);
     }
 
     void error(string message){
-        log(LogLevel::ERROR, message);
+        log(LogLevel::ERROR,message);
     }
 };

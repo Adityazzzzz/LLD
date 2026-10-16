@@ -1,5 +1,5 @@
 #include "LogAppender.cpp"
-#include <iostream>
+#include<iostream>
 using namespace std;
 
 class ConsoleAppender : public LogAppender{
