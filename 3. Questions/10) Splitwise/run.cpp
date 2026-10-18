@@ -288,13 +288,13 @@ int main(){
     groupService->addMember("G1",C);
 
 
-    // A pays $300 for A,B,C(Equal) -> B owes A $100, C owes A $100
+    // A pays $300 for A,B,C (Equal) -> B owes A $100, C owes A $100
     vector<Split*> split1 = { 
         new Split(A),new Split(B),new Split(C)
     };
     groupService->addExpense("G1","Rent",300.0,A,split1,SplitType::EQUAL);
 
-    // B pays $100 for B,C(Equal) -> C owes B $50
+    // B pays $100 for B,C (Equal) -> C owes B $50
     vector<Split*> split2 ={ new Split(B),new Split(C) };
     groupService->addExpense("G1","Groceries",100.0,B,split2,SplitType::EQUAL);
 
