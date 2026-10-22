@@ -1,14 +1,6 @@
-#include <iostream>
-#include <string>
-#include <unordered_map>
-#include <queue>
-#include <ctime>
+#include<iostream>
+using namespace std;
 
-using namespace std; // Speeds up interview typing
-
-// ==========================================
-// 1. ENUMS & CONFIG
-// ==========================================
 enum class RateLimitType {
     TOKEN_BUCKET,
     FIXED_WINDOW,
@@ -32,9 +24,6 @@ public:
     User(string id, string tier) : id(id), tier(tier) {}
 };
 
-// ==========================================
-// 2. ABSTRACT BASE CLASS (Strategy Interface)
-// ==========================================
 class RateLimiter {
 protected:
     RateLimitConfig config;
@@ -48,11 +37,6 @@ public:
     virtual bool allowRequest(string userId) = 0;
 };
 
-// ==========================================
-// 3. CONCRETE ALGORITHMS 
-// ==========================================
-
-// A. Fixed Window Algorithm
 class FixedWindow : public RateLimiter {
 private:
     struct WindowData {
@@ -91,7 +75,6 @@ public:
     }
 };
 
-// B. Sliding Window Logs Algorithm
 class SlidingWindowLogs : public RateLimiter {
 private:
     unordered_map<string, queue<time_t>> userLogs;
@@ -118,7 +101,6 @@ public:
     }
 };
 
-// C. Token Bucket Algorithm
 class TokenBucket : public RateLimiter {
 private:
     struct Bucket {
@@ -155,7 +137,6 @@ public:
     }
 };
 
-// D. Sliding Window Counter (Stubbed for MVP time limits)
 class SlidingWindowCounter : public RateLimiter {
 public:
     SlidingWindowCounter(RateLimitConfig cfg) : RateLimiter(cfg, RateLimitType::SLIDING_WINDOW_COUNTER) {}
@@ -164,9 +145,6 @@ public:
     }
 };
 
-// ==========================================
-// 4. FACTORY PATTERN
-// ==========================================
 class RateLimiterFactory {
 public:
     static RateLimiter* createRateLimiter(RateLimitType type, RateLimitConfig config) {
@@ -180,9 +158,6 @@ public:
     }
 };
 
-// ==========================================
-// 5. MANAGER / SERVICE
-// ==========================================
 class RateLimiterService {
 private:
     // Maps User Tier (e.g., "PREMIUM") to a specific RateLimiter implementation
@@ -218,31 +193,23 @@ public:
     }
 };
 
-// ==========================================
-// 6. DRIVER
-// ==========================================
 int main() {
     RateLimiterService service;
 
-    // 1. Setup Tiers via Factory
     // Basic tier: 2 requests per 10 seconds (Fixed Window)
     service.addTier("BASIC", RateLimitType::FIXED_WINDOW, RateLimitConfig(2, 10));
-    
     // Premium tier: 5 requests per 10 seconds (Sliding Window Logs)
     service.addTier("PREMIUM", RateLimitType::SLIDING_WINDOW_LOG, RateLimitConfig(5, 10));
 
-    // 2. Setup Users
     User* alice = new User("U1", "BASIC");
     User* bob = new User("U2", "PREMIUM");
 
-    // 3. Test Basic Tier (Fixed Window) - 2 allowed, 3rd blocked
-    cout << "--- TESTING BASIC TIER ---\n";
+    //Test Basic Tier (Fixed Window) - 2 allowed, 3rd blocked
     service.allowRequest(alice);
     service.allowRequest(alice);
     service.allowRequest(alice); // Should be BLOCKED
 
-    // 4. Test Premium Tier (Sliding Logs) - 5 allowed, 6th blocked
-    cout << "\n--- TESTING PREMIUM TIER ---\n";
+    //Test Premium Tier (Sliding Logs) - 5 allowed, 6th blocked
     for (int i = 0; i < 6; i++) {
         service.allowRequest(bob); 
     }
