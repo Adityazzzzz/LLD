@@ -34,10 +34,7 @@ protected:
     RateLimitConfig config;
     RateLimitType type;
 public:
-    RateLimiter(RateLimitConfig cfg,RateLimitType type){
-        this->config = cfg;
-        this->type = type;
-    }
+    RateLimiter(RateLimitConfig cfg, RateLimitType type) : config(cfg),type(type){}
     virtual ~RateLimiter() = default;
 
     virtual bool allowRequest(string userId) = 0;
@@ -52,11 +49,11 @@ private:
     unordered_map<string,WindowData> userWindows;
 public:
     FixedWindow(RateLimitConfig cfg) : RateLimiter(cfg,RateLimitType::FIXED_WINDOW){}
-
+    
     bool allowRequest(string userId) override{
         time_t now = time(nullptr);
         if(userWindows.find(userId) == userWindows.end()){
-            userWindows[userId] ={now,1};
+            userWindows[userId] = {now,1};
             return true;
         }
 
@@ -80,7 +77,6 @@ public:
 class SlidingWindowLogs:public RateLimiter{
 private:
     unordered_map<string,queue<time_t>> userLogs;
-
 public:
     SlidingWindowLogs(RateLimitConfig cfg) : RateLimiter(cfg,RateLimitType::SLIDING_WINDOW_LOG){}
 
@@ -108,7 +104,6 @@ private:
         time_t lastRefillTime;
     };
     unordered_map<string,Bucket> userBuckets;
-
 public:
     TokenBucket(RateLimitConfig cfg) : RateLimiter(cfg,RateLimitType::TOKEN_BUCKET){}
 
@@ -211,7 +206,7 @@ int main(){
     service.allowRequest(alice); // Should be BLOCKED
 
     //Test Premium Tier (Sliding Logs) - 5 allowed,6th blocked
-    for(int i = 0; i < 6; i++){
+    for(int i=0;i<6;i++){
         service.allowRequest(bob); 
     }
 
