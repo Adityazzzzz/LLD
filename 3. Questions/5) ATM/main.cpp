@@ -130,7 +130,7 @@ public:
     virtual void dispense(ATM* atm,int amount) = 0;
 };
 
-class TwoThousandDispenser : public CashDispenser{
+class TwoThousandDispenser:public CashDispenser{
 public:
     bool canDispense(ATM* atm,int amount) override{
         int notesNeeded = amount / 2000;
@@ -160,7 +160,7 @@ public:
     }
 };
 
-class FiveHundredDispenser : public CashDispenser{
+class FiveHundredDispenser:public CashDispenser{
 public:
     bool canDispense(ATM* atm,int amount) override{
         int notesNeeded = amount / 500;
@@ -190,7 +190,7 @@ public:
     }
 };
 
-class OneHundredDispenser : public CashDispenser{
+class OneHundredDispenser:public CashDispenser{
 public:
     bool canDispense(ATM* atm,int amount) override{
         int notesNeeded = amount / 100;
@@ -258,7 +258,7 @@ public:
     ATMStatus getStatus(){ return this->state->getStatus(); }
 };
 
-class IdleState : public ATMState{
+class IdleState:public ATMState{
 private:
     ATMMachine* atmMachine;
 public:
@@ -287,7 +287,7 @@ public:
     }
 };
 
-class CardInsertedState : public ATMState{
+class CardInsertedState:public ATMState{
 private:
     ATMMachine* atmMachine;
 public:
@@ -316,7 +316,7 @@ public:
     }
 };
 
-class AuthenticatedState : public ATMState{
+class AuthenticatedState:public ATMState{
 private:
     ATMMachine* atmMachine;
 public:
@@ -345,7 +345,7 @@ public:
     }
 };
 
-class DispenseCashState : public ATMState{
+class DispenseCashState:public ATMState{
 private:
     ATMMachine* atmMachine;
     CashDispenser* chain;
