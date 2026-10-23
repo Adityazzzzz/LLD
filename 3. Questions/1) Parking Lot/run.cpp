@@ -129,8 +129,7 @@ private:
     time_t entryTime;
     double fee;
 public:
-    Ticket(int id,Vehicle* vehicle,ParkingSpot* spot) 
-        : id(id),vehicle(vehicle),spot(spot),fee(0){
+    Ticket(int id,Vehicle* vehicle,ParkingSpot* spot) : id(id),vehicle(vehicle),spot(spot),fee(0){
         entryTime = time(nullptr);
     }
 
