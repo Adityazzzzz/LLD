@@ -5,7 +5,6 @@ class Cell{
 private:
     int position;
     Obstacle* obstacle;
-
 public:
     Cell(int position){
         this->position = position;
@@ -23,7 +22,6 @@ public:
     void setObstacle(Obstacle* obstacle){
         this->obstacle = obstacle;
     }
-
 
     bool hasObstacle(){
         return obstacle != nullptr;

@@ -17,7 +17,6 @@ private:
     int size;
     int sideLength;
     vector<vector<Cell*>> grid;
-
 public:
     Board(int size){
         this->size = size;

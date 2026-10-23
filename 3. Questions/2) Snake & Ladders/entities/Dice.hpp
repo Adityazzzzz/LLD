@@ -4,7 +4,6 @@
 class Dice{
 private:
     int noOfDice;
-
 public:
     Dice(int noOfDice){
         this->noOfDice = noOfDice;

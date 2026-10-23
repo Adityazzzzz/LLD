@@ -17,7 +17,6 @@ private:
     Board* board;
     Dice* dice;
     queue<Player*> players;
-
 public:
     Game(int size,int noOfLadders,int noOfSnakes,int noOfDice){
         this->noOfSnakes = noOfSnakes;
@@ -64,7 +63,6 @@ public:
             Player* currPlayer = players.front();
             players.pop();
 
-            cout << "-----------------------------------\n";
             int diceRoll = dice->roll();
             cout << currPlayer->getName() << " rolled " << diceRoll << "\n";
 

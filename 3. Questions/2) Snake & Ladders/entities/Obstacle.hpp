@@ -5,7 +5,6 @@ class Obstacle{
 protected:
     int src;
     int dest;
-
 public:
     Obstacle(int src,int dest){
         this->src = src;
