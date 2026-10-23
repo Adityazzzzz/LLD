@@ -7,7 +7,6 @@ class LogHandler{
 protected:
     LogHandler* next = nullptr;
     vector<LogAppender*> appenders;
-
 public:
     void setNext(LogHandler* handler){
         next = handler;
@@ -16,7 +15,7 @@ public:
         appenders.push_back(appender);
     }
 
-    virtual bool canHandle(LogLevel level)=0;
+    virtual bool canHandle(LogLevel level) = 0;
 
     void handle(LogMessage log){
         if(canHandle(log.level)){
@@ -28,6 +27,5 @@ public:
             next->handle(log);
         }
     }
-
     virtual ~LogHandler(){}
 };

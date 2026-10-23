@@ -1,8 +1,8 @@
 #include "LogFormatter.cpp"
 
-class JsonFormatter : public LogFormatter{
+class JsonFormatter:public LogFormatter{
 public:
-    string format(LogMessage log) overrid{
+    string format(LogMessage log) override{
         return "{ \"message\" : \"" + log.message + "\" }";
     }
 };
