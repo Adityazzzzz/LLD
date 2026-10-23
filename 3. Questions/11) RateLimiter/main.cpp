@@ -34,7 +34,7 @@ protected:
     RateLimitConfig config;
     RateLimitType type;
 public:
-    RateLimiter(RateLimitConfig cfg, RateLimitType type) : config(cfg),type(type){}
+    RateLimiter(RateLimitConfig cfg,RateLimitType type) : config(cfg),type(type){}
     virtual ~RateLimiter() = default;
 
     virtual bool allowRequest(string userId) = 0;
