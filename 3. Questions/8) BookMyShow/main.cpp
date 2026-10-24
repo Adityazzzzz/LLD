@@ -164,7 +164,7 @@ public:
         }
 
         // Grant lock
-        locks[key] ={userId,now + chrono::minutes(ttlMinutes),false};
+        locks[key] = {userId,now + chrono::minutes(ttlMinutes),false};
         return true;
     }
 
