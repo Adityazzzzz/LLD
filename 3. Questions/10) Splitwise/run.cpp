@@ -119,7 +119,7 @@ public:
         double totalPercent = 0;
         for(Split* s:splits){
             totalPercent += s->percentage;
-            s->amount =(totalAmount * s->percentage) / 100.0;
+            s->amount = (totalAmount * s->percentage) / 100.0;
         }
 
         return abs(totalPercent - 100.0) < 0.001;
@@ -295,7 +295,7 @@ int main(){
     groupService->addExpense("G1","Rent",300.0,A,split1,SplitType::EQUAL);
 
     // B pays $100 for B,C (Equal) -> C owes B $50
-    vector<Split*> split2 ={ new Split(B),new Split(C) };
+    vector<Split*> split2 = {new Split(B),new Split(C)};
     groupService->addExpense("G1","Groceries",100.0,B,split2,SplitType::EQUAL);
 
     //View Standard vs Simplified Balances
