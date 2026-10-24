@@ -164,13 +164,13 @@ private:
             if(!isRunning) break;
             
             auto now = chrono::system_clock::now();
-            for(auto it = locks.begin(); it != locks.end(); ){
+            for(auto it=locks.begin();it != locks.end(); ){
                 if(!it->second.isPermanent && now > it->second.expiryTime){
                     cout << "[TTL EXPIRY] Auto-releasing lock for seat key: " << it->first << "\n";
                     it = locks.erase(it);
                 } 
                 else{
-                    ++it;
+                    it++;
                 }
             }
         }
