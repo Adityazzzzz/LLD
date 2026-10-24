@@ -113,7 +113,7 @@ public:
         if(refillRate == 0) refillRate = 1;
 
         if(userBuckets.find(userId) == userBuckets.end()){
-            userBuckets[userId] ={config.maxRequests - 1,now};
+            userBuckets[userId] = {config.maxRequests - 1,now};
             return true;
         }
 
