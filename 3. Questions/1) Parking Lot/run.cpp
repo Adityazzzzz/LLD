@@ -158,7 +158,7 @@ public:
             case VehicleType::CAR: rate = 20.0; break;
             case VehicleType::TRUCK: rate = 30.0; break;
         }
-        int billableHours =(hours < 1) ? 1 : hours;
+        int billableHours = (hours < 1) ? 1 : hours;
         
         return billableHours * rate;
     }
