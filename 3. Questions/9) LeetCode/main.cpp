@@ -118,7 +118,7 @@ public:
 
         Verdict finalVerdict = Verdict::ACCEPTED;
 
-        for(size_t i = 0; i < problem->testCases.size(); ++i){
+        for(size_t i=0;i<problem->testCases.size();i++){
             const auto& tc = problem->testCases[i];
             ExecutionResult res = strategy->execute(submission->code,tc,problem->timeLimitMs);
 
