@@ -148,8 +148,8 @@ private:
 public:
     Board(){
         grid.resize(8,vector<Cell*>(8,nullptr));
-        for(int i = 0; i < 8; i++){
-            for(int j = 0; j < 8; j++){
+        for(int i=0;i<8;i++){
+            for(int j=0;j<8;j++){
                 grid[i][j] = new Cell(i,j);
             }
         }
