@@ -42,7 +42,7 @@ public:
     }
 
     int getRow(int position){
-        int row =(position - 1) / sideLength;
+        int row = (position - 1) / sideLength;
         return sideLength - 1 - row;
     }
 
